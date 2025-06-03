@@ -75,12 +75,12 @@ export default function App() {
                 <FaTint style={{ marginRight: "8px" }} />
                 Water Intake
               </NavLink>
-              <NavLink to="/calories" className="nav-link">
+              {/* <NavLink to="/calories" className="nav-link">
                <FaFireAlt style={{ marginRight: "8px" }} />
                 Calories
-              </NavLink>
+              </NavLink> */}
               <button onClick={handleLogout} className="logout-btn">
-                 <FaSignOutAlt style={{ marginRight: "8px" }} />
+                 <FaSignOutAlt style={{ marginRight: "8px", }} />
                 Logout
               </button>
             </nav>

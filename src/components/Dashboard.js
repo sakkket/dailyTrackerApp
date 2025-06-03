@@ -33,7 +33,7 @@ export default function Dashboard({ refresh }) {
             const expenseData = await fetchUserExpenditure(groupBy, month);
             if (expenseData && expenseData.length) {
                 setGraphData(expenseData);
-                setPieChartData(expenseData[0])
+                setPieChartData(expenseData[expenseData.length -1])
             } else {
                 setGraphData([]);
             }

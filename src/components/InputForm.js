@@ -72,7 +72,7 @@ export default function InputForm({ onExpenseAdded }) {
       return;
     }
     const payload = {
-      amount: expenditureAmount,
+      amount: parseInt(expenditureAmount),
       category: selectedExpenditure,
       date: date,
       day: moment.utc(date).format("YYYY-MM-DD"),
