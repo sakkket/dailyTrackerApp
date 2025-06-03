@@ -1,0 +1,53 @@
+/* Home.module.css */
+.waterTrackerButton {
+  padding: 0.50rem 1.2rem;
+  background-color: #ddad0e;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+    margin-left: auto;
+  transition: background-color 0.3s ease;
+}
+
+.waterTrackerButton:hover {
+  background-color: #6e5a05;
+}
+
+
+.inputButton {
+  padding: 0.50rem 1.2rem;
+  background-color: #4a90e2;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.inputButton:hover {
+  background-color: #357bd8;
+}
+
+.header {
+  width: 100%;
+  padding: 1.5rem 0;
+  background: linear-gradient(135deg, #2196f3, #21cbf3);
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-bottom: 4px;
+  margin-bottom: 10px;
+}
+
+.headertitle {
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
