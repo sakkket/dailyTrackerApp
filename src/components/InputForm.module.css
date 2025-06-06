@@ -52,3 +52,15 @@ select:focus {
 .button:hover {
   background-color: #0056b3;
 }
+
+.text-expenditure {
+  color: rgb(242, 45, 45);
+}
+
+.text-income {
+  color: green;
+}
+
+.text-savings {
+  color: green;
+}

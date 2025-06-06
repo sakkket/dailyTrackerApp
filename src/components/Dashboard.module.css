@@ -1,26 +1,42 @@
 .toggleGroup {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
   margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+   position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .toggle {
-  background: #ddd;
-  border: none;
   padding: 0.5rem 1rem;
-  margin: 0 0.3rem;
-  cursor: pointer;
+  font-size: 1rem;
+  border: 2px solid #ccc;
+  background-color: white;
+  color: #333;
   border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle:hover {
+  background-color: #eaeaea;
 }
 
 .activeToggle {
-  background: steelblue;
-  color: white;
-  border: none;
   padding: 0.5rem 1rem;
-  margin: 0 0.3rem;
+  font-size: 1rem;
+  border: 2px solid #007bff;
+  background-color: #007bff;
+  color: white;
   border-radius: 4px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .chartGrid {
@@ -33,13 +49,6 @@
   .chartGrid {
     grid-template-columns: 1fr 1fr;
   }
-}
-
-.chartContainer {
-  background: #fff;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .summary {
@@ -59,5 +68,70 @@
 .summary h2 {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+.chartContainer {
+  background-color: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 2rem 0;
+  transition: transform 0.2s ease;
+}
+
+.chartContainer:hover {
+  transform: scale(1.01);
+}
+
+.chartTitle {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #1a202c;
+}
+
+.monthPicker {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  max-width: 200px;
+}
+
+.monthPicker:hover {
+  border-color: #999;
+}
+
+.monthPicker:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+  outline: none;
+}
+
+
+.toggleContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  padding: 1rem;
+}
+
+/* Left stays on the left */
+.toggleContainerMonthPicker {
+  flex: 0 0 auto;
+}
+
+.graphTitle {
+  font-size: 1.0rem;
+  font-weight: bold;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 

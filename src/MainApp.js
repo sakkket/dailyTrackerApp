@@ -5,17 +5,12 @@ import styles from "./MainApp.module.css"
 import { FaPlusCircle, FaMoneyBillWave } from "react-icons/fa";
 
 export default function MainApp() {
-  const [data, setData] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const triggerRefresh = () => {
     setRefresh(prev => !prev);
     setShowForm(false);
   }
-  const addEntry = (entry) => {
-    setData((prev) => [...prev, entry]);
-    setShowForm(false);
-  };
 
   return (
     <div style={{ maxWidth: "1100px", margin: "0 auto", position: "relative" }}>
@@ -29,7 +24,8 @@ export default function MainApp() {
           
         >
            <FaPlusCircle style={{ marginRight: '8px' }} />
-          Add Expenses or Income
+          ADD
+          {/* '<FaMoneyBillWave style={{ marginLeft: '8px' }} />' */}
         </button>
       </div>
       <div style={{ display: "flex", gap: "1rem" }}>

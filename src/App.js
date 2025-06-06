@@ -16,6 +16,7 @@ import MainApp from "./MainApp";
 import Calories from "./CaloriesTracker/Calories";
 import WaterTracker from "./trackers/WaterTracker";
 import { validateToken } from "./API/APIService"
+import TransactionTable from "./components/TransactionTable";
 
 // Placeholder Expenditure component
 function Expenditure() {
@@ -65,25 +66,43 @@ export default function App() {
                 👋 Welcome, {user}!
               </div>
             )}
-            <h3 className="sidebar-title">Trackers</h3>
+  
             <nav className="sidebar-nav">
-              <NavLink to="/" className="nav-link">
-              <FaMoneyBill style={{ marginRight: "8px" }} />
-                Expenditure
-              </NavLink>
-              <NavLink to="/waterTracker" className="nav-link">
-                <FaTint style={{ marginRight: "8px" }} />
-                Water Intake
-              </NavLink>
-              {/* <NavLink to="/calories" className="nav-link">
-               <FaFireAlt style={{ marginRight: "8px" }} />
-                Calories
-              </NavLink> */}
-              <button onClick={handleLogout} className="logout-btn">
-                 <FaSignOutAlt style={{ marginRight: "8px", }} />
-                Logout
-              </button>
-            </nav>
+  <div className="nav-group">
+    <div className="nav-group-title">Finance</div>
+    <NavLink to="/" className="nav-link">
+      <FaMoneyBill style={{ marginRight: "8px" }} />
+      Expenditure
+    </NavLink>
+    <NavLink to="/transactions" className="nav-link">
+      <FaMoneyBill style={{ marginRight: "8px" }} />
+      Transactions
+    </NavLink>
+  </div>
+
+  <div className="nav-group">
+    <div className="nav-group-title">Health</div>
+    <NavLink to="/waterTracker" className="nav-link">
+      <FaTint style={{ marginRight: "8px" }} />
+      Water Intake
+    </NavLink>
+    {/* 
+    <NavLink to="/calories" className="nav-link">
+      <FaFireAlt style={{ marginRight: "8px" }} />
+      Calories
+    </NavLink> 
+    */}
+  </div>
+
+  <div className="nav-group">
+    <div className="nav-group-title">Settings</div>
+    <button onClick={handleLogout} className="logout-btn">
+      <FaSignOutAlt style={{ marginRight: "8px" }} />
+      Logout
+    </button>
+  </div>
+</nav>
+
           </aside>
         )}
 
@@ -112,6 +131,10 @@ export default function App() {
             <Route
               path="/waterTracker"
               element={user ? <WaterTracker /> : <Navigate to="/login" replace />}
+            />
+            <Route
+              path="/transactions"
+              element={user ? <TransactionTable /> : <Navigate to="/login" replace />}
             />
             <Route path="/expenditure" element={<Expenditure />} />
             <Route path="*" element={<Navigate to="/" replace />} />
