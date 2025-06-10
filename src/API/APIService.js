@@ -95,6 +95,17 @@ export async function fetchTotalUserExpenditureAndIncome(month) {
   }
 }
 
+export async function fetchTransactions(month) {
+  try{
+     const res = await fetch(`${API_BASE_URL}/transaction/list?month=${month}`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  return await res.json();
+  } catch(error){
+    return null;
+  }
+}
 // Save Expenditure API
 export async function signUp(payload) {
   try {

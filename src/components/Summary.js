@@ -15,7 +15,7 @@ export default function Summary({ income, expenditure, saving, month }) {
         <div className="summary-value">₹{expenditure}</div>
       </div>
       <div className="summary-card income">
-        <div className="summary-label">Total Income</div>
+        <div className="summary-label">Total Income/Budget</div>
         <div className="summary-value">₹{income}</div>
       </div>
       <div className="summary-card income">

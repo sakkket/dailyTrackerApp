@@ -59,16 +59,17 @@ export default function Dashboard({ refresh }) {
 
   async function fetchMonthlyExpense(selectedMonth) {
     try {
-      const month = selectedMonth?selectedMonth:currentMonth;
+      const month = selectedMonth ? selectedMonth : currentMonth;
       const groupBy = "month";
       const expenseData = await fetchUserExpenditure(groupBy);
       if (expenseData && expenseData.length) {
         setGraphDataYearly(expenseData);
-        const pieChartData = expenseData.find(data => data.date === month) || [];
+        const pieChartData =
+          expenseData.find((data) => data.date === month) || [];
         setPieChartData(pieChartData);
       } else {
         setGraphDataYearly([]);
-         setPieChartData([]);
+        setPieChartData([]);
       }
     } catch {}
   }
@@ -104,7 +105,6 @@ export default function Dashboard({ refresh }) {
     fetchMonthlyExpense();
   }, [refresh, view]);
 
-  
   const expenditureCategories = {
     transport: "Transport",
     food: "Food & Drinks",
@@ -178,7 +178,7 @@ export default function Dashboard({ refresh }) {
           data={graphData}
           dataKey="totalExpenditure"
           color="#8884d8"
-          view={view}
+          view="daily"
         />
         <PieGraph
           title="Monthly Expenditure Breakdown"
@@ -190,7 +190,7 @@ export default function Dashboard({ refresh }) {
           data={graphDataYearly}
           dataKey="totalExpenditure"
           color="#8884d8"
-          view={view}
+          view="monthly"
         />
       </div>
     </div>
@@ -200,7 +200,7 @@ export default function Dashboard({ refresh }) {
 function Chart({ title, keys, data, view }) {
   return (
     <div className={styles.chartContainer}>
-     <h3 className={styles.graphTitle}>{title}</h3>
+      <h3 className={styles.graphTitle}>{title}</h3>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -285,7 +285,12 @@ function LineGraph({ title, data, dataKey, color, view }) {
             dataKey="date"
             stroke="#4a5568"
             tick={{ fontSize: 12, fill: "#2d3748" }}
-            tickFormatter={(dateStr) => format(parseISO(dateStr), "MMM yyyy")}
+            tickFormatter={(dateStr) =>
+              format(
+                parseISO(dateStr),
+                view === "daily" ? "dd MMM" : "MMM yyyy"
+              )
+            }
           />
           <YAxis
             stroke="#4a5568"
@@ -320,21 +325,36 @@ function LineGraph({ title, data, dataKey, color, view }) {
 }
 
 function PieGraph({ title, data, colors }) {
-    const RADIAN = Math.PI / 180;
-const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  const RADIAN = Math.PI / 180;
+  const renderCustomizedLabel = ({
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    percent,
+    index,
+  }) => {
+    if (percent * 100 < 10) return null; // 💡 Skip labels below 15%
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-  return (
-    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-      {`${(percent * 100).toFixed(0)}%`}
-    </text>
-  );
-};
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor={x > cx ? "start" : "end"}
+        dominantBaseline="central"
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
+  };
   return (
     <div className={styles.chartContainer}>
-     <h3 className={styles.graphTitle}>{title}</h3>
+      <h3 className={styles.graphTitle}>{title}</h3>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Tooltip
@@ -367,24 +387,24 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
               <Cell
                 key={`cell-${index}`}
                 fill={
-                [
-                  "#8884d8", // purple
-                  "#82ca9d", // green
-                  "#ffc658", // yellow
-                  "#ff8042", // orange
-                  "#8dd1e1", // teal
-                  "#a4de6c", // lime
-                  "#d0ed57", // light green
-                  "#a28fd0", // lavender
-                  "#f49ac2", // pink
-                  "#b0c4de", // light steel blue
-                  "#f4a460", // sandy brown
-                  "#ff7f50", // coral
-                  "#7fc97f", // soft green
-                  "#beaed4", // soft purple
-                  "#fdc086", // soft orange
-                ][index % 15]
-              }
+                  [
+                    "#8884d8", // purple
+                    "#82ca9d", // green
+                    "#ffc658", // yellow
+                    "#ff8042", // orange
+                    "#8dd1e1", // teal
+                    "#a4de6c", // lime
+                    "#d0ed57", // light green
+                    "#a28fd0", // lavender
+                    "#f49ac2", // pink
+                    "#b0c4de", // light steel blue
+                    "#f4a460", // sandy brown
+                    "#ff7f50", // coral
+                    "#7fc97f", // soft green
+                    "#beaed4", // soft purple
+                    "#fdc086", // soft orange
+                  ][index % 15]
+                }
               />
             ))}
           </Pie>

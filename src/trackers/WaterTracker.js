@@ -64,9 +64,9 @@ export default function WaterTracker() {
 
   return (
     <div style={{ maxWidth: "1100px", margin: "0 auto", position: "relative" }}>
-      <div className="header">
+      {/* <div className="header">
         <h1 className="headertitle">WATER REMINDER</h1>
-      </div>
+      </div> */}
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
         <button className="settings-button" onClick={toggleModal} ><FiSettings style={{ marginRight: "8px" }} /> Settings</button>
       </div>
@@ -116,7 +116,7 @@ export default function WaterTracker() {
         </div>
         <div className="water-container">
           <div className="tracker-card">
-            <h1 className="title">Stay Hydrated!</h1>
+            <h1 className="title">Water Tracker!</h1>
 
             <div className="glasses-container" onClick={handleAddGlass}>
               {Array.from({ length: goal }).map((_, index) => (
