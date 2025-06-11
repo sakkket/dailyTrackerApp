@@ -54,6 +54,11 @@ export const EXPENDITURE_CATEGORIES = [
     label: "Gadget",
     type: "DEBIT",
   },
+   {
+    key: "health",
+    label: "Health & Grooming",
+    type: "DEBIT",
+  },
   {
     key: "car",
     label: "Car Fuel & Maintainance",
@@ -103,5 +108,6 @@ export const EXPENDITURE_CATEGORIES_MAP = {
     "mutualFund": "Mutual Fund",
     "fd": "Fixed Deposit",
     "rd": "Recurring Deposit",
-    "stocks": "Stocks"
+    "stocks": "Stocks",
+    "health": "Health & Grooming"
 };

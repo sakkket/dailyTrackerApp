@@ -7,6 +7,9 @@ import { FaPlusCircle, FaMoneyBillWave } from "react-icons/fa";
 export default function MainApp() {
   const [showForm, setShowForm] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const openAddModal = () => {
+    setShowForm(true);
+  }
   const triggerRefresh = () => {
     setRefresh((prev) => !prev);
     setShowForm(false);
@@ -17,7 +20,7 @@ export default function MainApp() {
       {/* <div className={styles.header}>
         <h1 className={styles.headertitle}>EXPENDITURE TRACKER</h1>
       </div> */}
-      <div
+       {/* <div
         style={{
           display: "flex",
           justifyContent: "flex-end",
@@ -31,10 +34,10 @@ export default function MainApp() {
           <FaPlusCircle style={{ marginRight: "8px" }} />
           ADD
         </button>
-      </div>
+      </div>  */}
       <div style={{ display: "flex", gap: "1rem" }}>
         <div style={{ flex: 1 }}>
-          <Dashboard refresh={refresh} />
+          <Dashboard refresh={refresh} openAddExpenseModal={openAddModal}/>
         </div>
       </div>
 

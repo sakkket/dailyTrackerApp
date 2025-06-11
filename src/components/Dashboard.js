@@ -22,21 +22,40 @@ import {
   Cell,
 } from "recharts";
 import moment from "moment";
-export default function Dashboard({ refresh }) {
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { FaPlusCircle, FaMoneyBillWave } from "react-icons/fa";
+import { Container, Box, Button, TextField, IconButton } from "@mui/material";
+import SummaryCards from "./SummaryCardNew";
+
+
+export default function Dashboard({ refresh, openAddExpenseModal }) {
   const [totalExpenditure, setTotalExpenditureSoFar] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalSavings, setTotalSaving] = useState(0);
   const [pieChartData, setPieChartData] = useState({});
+  const [categoryChart, setCategoryChart] = useState([]);
   const [view, setView] = useState("daily");
   const [graphData, setGraphData] = useState([]);
   const [graphDataYearly, setGraphDataYearly] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(moment().format("YYYY-MM"));
-
+  const [selectedDate, setSelectedDate] = useState(new Date());
   async function monthValueChanged(selectedMonth) {
     setCurrentMonth(selectedMonth);
     fetchExpense(view, selectedMonth);
     fetchTotalExpenseAndIncome(selectedMonth);
     fetchMonthlyExpense(selectedMonth);
+  }
+
+  async function changeMonth(selectedMonth) {
+    const month = moment(selectedMonth).format("YYYY-MM");
+    setCurrentMonth(month);
+    setSelectedDate(selectedMonth);
+    setCurrentMonth(month);
+    fetchExpense(view, month);
+    fetchTotalExpenseAndIncome(month);
+    fetchMonthlyExpense(month);
   }
 
   async function fetchExpense(view, selectedMonth) {
@@ -57,6 +76,22 @@ export default function Dashboard({ refresh }) {
     } catch {}
   }
 
+  function openAddExpense(e){
+    e.preventDefault();
+    openAddExpenseModal();
+  }
+  const getCategoryData = (data) =>{
+    const categoryArray = [];
+    if(data){
+      for(const key in data){
+        if(expenditureCategories[key] &&  data[key]){
+           categoryArray.push({ category: expenditureCategories[key], value: data[key] },)
+        }
+      }
+    }
+    return categoryArray;
+  }
+
   async function fetchMonthlyExpense(selectedMonth) {
     try {
       const month = selectedMonth ? selectedMonth : currentMonth;
@@ -67,9 +102,11 @@ export default function Dashboard({ refresh }) {
         const pieChartData =
           expenseData.find((data) => data.date === month) || [];
         setPieChartData(pieChartData);
+        setCategoryChart(getCategoryData(pieChartData));
       } else {
         setGraphDataYearly([]);
         setPieChartData([]);
+        setCategoryChart([]);
       }
     } catch {}
   }
@@ -118,6 +155,7 @@ export default function Dashboard({ refresh }) {
     transfer: "Fund Transfer",
     gadget: "Gadget",
     car: "Car Fuel & Maintainance",
+    health: "Health & Grooming",
   };
   const getPieData = (sourceData, keys) =>
     Object.keys(keys)
@@ -138,34 +176,38 @@ export default function Dashboard({ refresh }) {
 
   return (
     <div>
-      <Summary
-        income={totalIncome}
-        expenditure={totalExpenditure}
-        saving={totalSavings}
-        month={moment(currentMonth).format("MMMM YYYY")}
-      />
-      <div className={styles.toggleContainer}>
-        <div className={styles.toggleContainerMonthPicker}>
-          <input
-            className={styles.monthPicker}
-            type="month"
-            value={currentMonth}
-            onChange={(e) => monthValueChanged(e.target.value)}
+      <Container maxWidth="lg">
+        <Box mt={2}>
+          <SummaryCards
+            income={totalIncome}
+            expenditure={totalExpenditure}
+            saving={totalSavings}
+            month={currentMonth}
           />
-        </div>
-        {/* <div className={styles.toggleGroup}>
-          {["daily", "monthly"].map((v) => (
-            <button
-              key={v}
-              className={view === v ? styles.activeToggle : styles.toggle}
-              onClick={() => fetchExpense(v)}
-            >
-              {v.charAt(0).toUpperCase() + v.slice(1)}
-            </button>
-          ))}
-        </div> */}
-      </div>
-
+          <Box mt={3} display="flex" justifyContent="flex-end">
+            <Button variant="contained" color="success" onClick={openAddExpense}>
+              <FaPlusCircle style={{ marginRight: "8px" }} /> Add
+            </Button>
+          </Box>
+          <Box >
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                views={["year", "month"]}
+                label="Month"
+                minDate={new Date("2020-01-01")}
+                maxDate={new Date("2030-12-31")}
+                value={selectedDate}
+                onChange={(newValue) => {
+                  changeMonth(newValue);
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} size="small"/>
+                )}
+              />
+            </LocalizationProvider>
+          </Box>
+        </Box>
+      </Container>
       <div className={styles.chartGrid}>
         <Chart
           title="Daily Expenditure"
@@ -179,6 +221,12 @@ export default function Dashboard({ refresh }) {
           dataKey="totalExpenditure"
           color="#8884d8"
           view="daily"
+        />
+         <CategoryChart
+          title="Montly Expenditure Breakdown"
+          keys={expenditureCategories}
+          data={categoryChart}
+          view={view}
         />
         <PieGraph
           title="Monthly Expenditure Breakdown"
@@ -269,6 +317,43 @@ function Chart({ title, keys, data, view }) {
             />
           ))}
         </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function CategoryChart({ title, keys, data, view }) {
+  return (
+    <div className={styles.chartContainer}>
+      <h3 className={styles.graphTitle}>{title}</h3>
+      <ResponsiveContainer width="100%" height={300}>
+       <BarChart
+        data={data}
+        margin={{bottom: 40 }}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        
+        <XAxis dataKey="category"
+        tick={{ fontSize: 10, fill: "#2d3748" ,  fontWeight:500, }}
+        angle={-40} textAnchor="end" interval={0} />
+       <YAxis
+            stroke="#475569"
+            tick={{ fontSize: 12,fill: "#334155" }}
+            axisLine={{ stroke: "#cbd5e1" }}
+            tickLine={false}
+          />
+       <Tooltip
+            contentStyle={{
+              backgroundColor: "#ffffff",
+              border: "1px solid #cbd5e1",
+              borderRadius: 8,
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.08)",
+            }}
+            labelStyle={{ color: "#334155", fontWeight: "bold" }}
+            itemStyle={{ color: "#1e293b" }}
+          />
+        <Bar dataKey="value" fill="#1976d2" />
+      </BarChart>
       </ResponsiveContainer>
     </div>
   );
