@@ -7,16 +7,16 @@ import { EXPENDITURE_CATEGORIES } from "../helpers/constants";
 
 const GROUPED_EXPENDITURE_CATEGORIES = [
   {
-    group: "Expenditure",
-    items: EXPENDITURE_CATEGORIES.filter((cat) => cat.type === "DEBIT"),
-  },
-  {
     group: "Savings",
     items: EXPENDITURE_CATEGORIES.filter((cat) => cat.type === "SAVINGS"),
   },
   {
     group: "Income",
     items: EXPENDITURE_CATEGORIES.filter((cat) => cat.type === "CREDIT"),
+  },
+  {
+    group: "Expenditure",
+    items: EXPENDITURE_CATEGORIES.filter((cat) => cat.type === "DEBIT"),
   },
 ];
 const GROUP = {
@@ -35,6 +35,7 @@ export default function InputForm({ onExpenseAdded }) {
   const [selectedExpenditure, setSelectedExpenditure] = useState("food");
   const [expenditureAmount, setExpenditureAmount] = useState();
   const [groupCategory, setGroupCategory] = useState("Expenditure");
+  const [comment, setComment] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,6 +54,7 @@ export default function InputForm({ onExpenseAdded }) {
       day: moment.utc(date).format("YYYY-MM-DD"),
       month: moment.utc(date).format("YYYY-MM"),
       type: exObj.type,
+      comment: comment
     };
     const res = await saveExpenditure(payload);
     if (res) {
@@ -115,6 +117,16 @@ export default function InputForm({ onExpenseAdded }) {
             const sanitizedValue = inputValue.replace(/^0+(?!\.)/, ""); // remove leading zeros
             setExpenditureAmount(sanitizedValue);
           }}
+        />
+      </div>
+
+      <div className={styles.row}>
+        <label>Comment</label>
+        <input
+          type="text"
+          placeholder="Add a comment (optional)"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
         />
       </div>
 

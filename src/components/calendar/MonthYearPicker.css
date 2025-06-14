@@ -1,0 +1,77 @@
+.month-year-container {
+  position: relative;
+  display: inline-block;
+}
+
+.trigger-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.trigger-button:hover {
+  background-color: #f0f0f0;
+}
+
+.calendar-icon {
+  font-size: 18px;
+  color: #444;
+}
+
+.custom-picker-popup {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  animation: fadeInScale 0.2s ease-out forwards;
+}
+
+.year-dropdown {
+  width: 100%;
+  padding: 6px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.month-button {
+  padding: 6px;
+  border: none;
+  background-color: #eee;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.month-button:hover {
+  background-color: #d2e3fc;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

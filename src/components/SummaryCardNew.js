@@ -7,9 +7,12 @@ import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import moment from "moment";
+import { useTheme, useMediaQuery } from "@mui/material";
 
 const SummaryCards = ({ income, expenditure, saving, month }) => {
   const balance = income - (expenditure + saving);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const cards = [
     {
       label: "Balance",
@@ -36,56 +39,107 @@ const SummaryCards = ({ income, expenditure, saving, month }) => {
       color: "blue",
     },
   ];
-
-  return (
-    <Box width="100%">
-      <Grid container spacing={2}>
-        <Card
-          elevation={3}
-          sx={{
-            backgroundColor: "#e3f2fd", // Light blue
-            borderRadius: 2,
-          }}
-        >
-          <CardContent>
-            <Box display="flex" alignItems="center" gap={2}>
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Summary for
-                </Typography>
-                <Typography variant="h6">
-                 {moment(month).format('MMM YYYY')}
-                  <KeyboardDoubleArrowRightIcon
-                    fontSize="small"
-                    style={{ color: "blue" }}
-                  />
-                </Typography>
-              </Box>
-            </Box>
-          </CardContent>
-        </Card>
-        {cards.map((card, index) => (
-          <Grid item xs={12} sm={4} key={index}>
-            <Card elevation={3}>
-              <CardContent>
-                <Box display="flex" alignItems="center" gap={2}>
-                  {card.icon}
-                  <Box>
-                    <Typography variant="subtitle1" color="text.secondary">
-                      {card.label}
-                    </Typography>
-                    <Typography variant="h6" style={{ color: card.color }}>
-                      ₹{card.amount.toLocaleString()}
-                    </Typography>
-                  </Box>
+  if (isSmallScreen)
+    return (
+      <Box width="100%">
+        <Grid item spacing={3}>
+          <Card
+            elevation={3}
+            sx={{
+              backgroundColor: "#e3f2fd", // Light blue
+              borderRadius: 2,
+            }}
+          >
+            <CardContent>
+              <Box display="flex" alignItems="center" gap={2}>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Summary for
+                  </Typography>
+                  <Typography variant="h6">
+                    {moment(month).format("MMM YYYY")}
+                    <KeyboardDoubleArrowRightIcon
+                      fontSize="small"
+                      style={{ color: "blue" }}
+                    />
+                  </Typography>
                 </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
-  );
+              </Box>
+            </CardContent>
+          </Card>
+          {cards.map((card, index) => (
+            <Grid item xs={12} sm={6} key={index} mt={2}>
+              <Card elevation={4}>
+                <CardContent>
+                  <Box display="flex" alignItems="center" gap={2}>
+                    {card.icon}
+                    <Box>
+                      <Typography variant="subtitle1" color="text.secondary">
+                        {card.label}
+                      </Typography>
+                      <Typography variant="h6" style={{ color: card.color }}>
+                        ₹{card.amount.toLocaleString()}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    );
+  else {
+    return (
+      <Box width="100%">
+        <Grid container spacing={3}>
+          <Card
+            elevation={3}
+            sx={{
+              backgroundColor: "#e3f2fd", // Light blue
+              borderRadius: 2,
+            }}
+          >
+            <CardContent>
+              <Box display="flex" alignItems="center" gap={2}>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Summary for
+                  </Typography>
+                  <Typography variant="h6">
+                    {moment(month).format("MMM YYYY")}
+                    <KeyboardDoubleArrowRightIcon
+                      fontSize="small"
+                      style={{ color: "blue" }}
+                    />
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+          {cards.map((card, index) => (
+            <Grid item xs={12} sm={6} key={index}>
+              <Card elevation={3}>
+                <CardContent>
+                  <Box display="flex" alignItems="center" gap={2}>
+                    {card.icon}
+                    <Box>
+                      <Typography variant="subtitle1" color="text.secondary">
+                        {card.label}
+                      </Typography>
+                      <Typography variant="h6" style={{ color: card.color }}>
+                        ₹{card.amount.toLocaleString()}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    );
+  }
 };
 
 export default SummaryCards;

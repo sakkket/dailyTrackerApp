@@ -26,7 +26,7 @@ export default function Login({ onLogin }) {
   return (
     <div className={styles.loginWrapper}>
       <form className={styles.loginForm} onSubmit={handleSubmit}>
-        <h2 className={styles.title}>Daily Tracker Login</h2>
+        <h2 className={styles.title}>Daily Tracker</h2>
         <input
           type="email"
           placeholder="Email"

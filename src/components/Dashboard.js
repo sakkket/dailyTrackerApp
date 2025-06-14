@@ -28,7 +28,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { FaPlusCircle, FaMoneyBillWave } from "react-icons/fa";
 import { Container, Box, Button, TextField, IconButton } from "@mui/material";
 import SummaryCards from "./SummaryCardNew";
-
+import MonthYearPicker from "./calendar/MonthYearPicker";
 
 export default function Dashboard({ refresh, openAddExpenseModal }) {
   const [totalExpenditure, setTotalExpenditureSoFar] = useState(0);
@@ -40,18 +40,9 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
   const [graphData, setGraphData] = useState([]);
   const [graphDataYearly, setGraphDataYearly] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(moment().format("YYYY-MM"));
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  async function monthValueChanged(selectedMonth) {
-    setCurrentMonth(selectedMonth);
-    fetchExpense(view, selectedMonth);
-    fetchTotalExpenseAndIncome(selectedMonth);
-    fetchMonthlyExpense(selectedMonth);
-  }
 
-  async function changeMonth(selectedMonth) {
-    const month = moment(selectedMonth).format("YYYY-MM");
+  async function handleMonthChange(month) {
     setCurrentMonth(month);
-    setSelectedDate(selectedMonth);
     setCurrentMonth(month);
     fetchExpense(view, month);
     fetchTotalExpenseAndIncome(month);
@@ -76,21 +67,24 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
     } catch {}
   }
 
-  function openAddExpense(e){
+  function openAddExpense(e) {
     e.preventDefault();
     openAddExpenseModal();
   }
-  const getCategoryData = (data) =>{
+  const getCategoryData = (data) => {
     const categoryArray = [];
-    if(data){
-      for(const key in data){
-        if(expenditureCategories[key] &&  data[key]){
-           categoryArray.push({ category: expenditureCategories[key], value: data[key] },)
+    if (data) {
+      for (const key in data) {
+        if (expenditureCategories[key] && data[key]) {
+          categoryArray.push({
+            category: expenditureCategories[key],
+            value: data[key],
+          });
         }
       }
     }
     return categoryArray;
-  }
+  };
 
   async function fetchMonthlyExpense(selectedMonth) {
     try {
@@ -184,27 +178,22 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
             saving={totalSavings}
             month={currentMonth}
           />
-          <Box mt={3} display="flex" justifyContent="flex-end">
-            <Button variant="contained" color="success" onClick={openAddExpense}>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mt={4}
+          >
+            {/* Left Component */}
+            <MonthYearPicker onMonthChange={handleMonthChange} />
+
+            <Button
+              variant="contained"
+              color="success"
+              onClick={openAddExpense}
+            >
               <FaPlusCircle style={{ marginRight: "8px" }} /> Add
             </Button>
-          </Box>
-          <Box >
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                views={["year", "month"]}
-                label="Month"
-                minDate={new Date("2020-01-01")}
-                maxDate={new Date("2030-12-31")}
-                value={selectedDate}
-                onChange={(newValue) => {
-                  changeMonth(newValue);
-                }}
-                renderInput={(params) => (
-                  <TextField {...params} size="small"/>
-                )}
-              />
-            </LocalizationProvider>
           </Box>
         </Box>
       </Container>
@@ -222,7 +211,7 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
           color="#8884d8"
           view="daily"
         />
-         <CategoryChart
+        <CategoryChart
           title="Montly Expenditure Breakdown"
           keys={expenditureCategories}
           data={categoryChart}
@@ -327,22 +316,23 @@ function CategoryChart({ title, keys, data, view }) {
     <div className={styles.chartContainer}>
       <h3 className={styles.graphTitle}>{title}</h3>
       <ResponsiveContainer width="100%" height={300}>
-       <BarChart
-        data={data}
-        margin={{bottom: 40 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        
-        <XAxis dataKey="category"
-        tick={{ fontSize: 10, fill: "#2d3748" ,  fontWeight:500, }}
-        angle={-40} textAnchor="end" interval={0} />
-       <YAxis
+        <BarChart data={data} margin={{ bottom: 40 }}>
+          <CartesianGrid strokeDasharray="3 3" />
+
+          <XAxis
+            dataKey="category"
+            tick={{ fontSize: 10, fill: "#2d3748", fontWeight: 500 }}
+            angle={-40}
+            textAnchor="end"
+            interval={0}
+          />
+          <YAxis
             stroke="#475569"
-            tick={{ fontSize: 12,fill: "#334155" }}
+            tick={{ fontSize: 12, fill: "#334155" }}
             axisLine={{ stroke: "#cbd5e1" }}
             tickLine={false}
           />
-       <Tooltip
+          <Tooltip
             contentStyle={{
               backgroundColor: "#ffffff",
               border: "1px solid #cbd5e1",
@@ -352,8 +342,8 @@ function CategoryChart({ title, keys, data, view }) {
             labelStyle={{ color: "#334155", fontWeight: "bold" }}
             itemStyle={{ color: "#1e293b" }}
           />
-        <Bar dataKey="value" fill="#1976d2" />
-      </BarChart>
+          <Bar dataKey="value" fill="#1976d2" />
+        </BarChart>
       </ResponsiveContainer>
     </div>
   );

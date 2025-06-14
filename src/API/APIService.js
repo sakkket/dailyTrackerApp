@@ -1,6 +1,6 @@
 // src/api/api.js
 
-const API_BASE_URL = "http://localhost:3010";
+const API_BASE_URL = "http://192.168.0.114:3010";
 
 // Helper to get token from localStorage
 function getAuthHeaders() {
@@ -95,9 +95,9 @@ export async function fetchTotalUserExpenditureAndIncome(month) {
   }
 }
 
-export async function fetchTransactions(month) {
+export async function fetchTransactions(month, category=null, limit=10, offset=0) {
   try{
-     const res = await fetch(`${API_BASE_URL}/transaction/list?month=${month}`, {
+    const res = await fetch(`${API_BASE_URL}/transaction/list?month=${month}&category=${category}&limit=${limit}&offset=${offset}`, {
     method: "GET",
     headers: getAuthHeaders(),
   });

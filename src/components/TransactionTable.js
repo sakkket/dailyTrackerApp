@@ -16,18 +16,18 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Chip,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Chip } from "@mui/material";
 import moment from "moment";
 import { fetchTransactions } from "../API/APIService";
 import { EXPENDITURE_CATEGORIES_MAP } from "../helpers/constants";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { format } from "date-fns";
+import MonthYearPicker from "./calendar/MonthYearPicker";
+import { EXPENDITURE_CATEGORIES } from "../helpers/constants";
 
 const descendingComparator = (a, b, orderBy) => {
   if (b[orderBy] < a[orderBy]) return -1;
@@ -35,11 +35,10 @@ const descendingComparator = (a, b, orderBy) => {
   return 0;
 };
 
-const getComparator = (order, orderBy) => {
-  return order === "desc"
+const getComparator = (order, orderBy) =>
+  order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
-};
 
 const sortRows = (array, comparator) => {
   const stabilized = array.map((el, index) => [el, index]);
@@ -50,7 +49,7 @@ const sortRows = (array, comparator) => {
   return stabilized.map((el) => el[0]);
 };
 
-const TransactionTable = () => {
+export default function TransactionTable() {
   const [rows, setRows] = useState([]);
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("date");
@@ -58,25 +57,32 @@ const TransactionTable = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [editingId, setEditingId] = useState(null);
   const [amountEdit, setAmountEdit] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedMonth, setMonth] = useState(moment().format("YYYY-MM"));
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  // Fetch transactions from the API
+  const [pageCount, setPageCount] = useState(0);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   useEffect(() => {
-    fetchTransactionsList(selectedMonth);
+    fetchTransactionsList(selectedMonth, "", rowsPerPage, page);
   }, []);
 
-  const fetchTransactionsList = async (month) => {
+  const fetchTransactionsList = async (month, category = "", limit, offset) => {
     try {
-      const transactions = await fetchTransactions(month);
-      if (transactions && transactions.length) {
-        transactions.forEach((element) => {
-          element.category = EXPENDITURE_CATEGORIES_MAP[element.category];
-        });
+      category = category === 'all'?'':category;
+      const res = await fetchTransactions(month, category, limit, offset);
+      if (res && res.transactions.length) {
+        setPageCount(res.totalCount);
+        const transactions = res.transactions.map((tx) => ({
+          ...tx,
+          category: EXPENDITURE_CATEGORIES_MAP[tx.category],
+        }));
         setRows(transactions);
-        //setTotalCount(20);
       } else {
         setRows([]);
+        setPage(0);
+        setPageCount(0);
       }
     } catch (error) {
       console.error("Error fetching transactions:", error);
@@ -89,32 +95,44 @@ const TransactionTable = () => {
     setOrderBy(property);
   };
 
-  const handleChangePage = (event, newPage) => setPage(newPage);
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+  const handleChangePage = (_, newPage) => {
+    setPage(newPage);
+    fetchTransactionsList(
+      selectedMonth,
+      "",
+      rowsPerPage,
+      newPage * rowsPerPage
+    );
+  };
+
+  const handleMonthChange = (month) => {
+    setMonth(month);
+    fetchTransactionsList(month, categoryFilter, rowsPerPage, page);
+  }
+  const handleChangeRowsPerPage = (e) => {
+    setRowsPerPage(parseInt(e.target.value, 10));
     setPage(0);
   };
 
   const startEdit = (row) => {
-    setEditingId(row.id);
+    setEditingId(row._id);
     setAmountEdit(row.amount);
   };
 
   const saveEdit = (id) => {
     const updatedRows = rows.map((row) =>
-      row.id === id ? { ...row, amount: parseFloat(amountEdit) } : row
+      row._id === id ? { ...row, amount: parseFloat(amountEdit) } : row
     );
     setRows(updatedRows);
     setEditingId(null);
   };
 
-  const deleteRow = (id) => {
-    const updated = rows.filter((row) => row.id !== id);
-    setRows(updated);
-  };
+  const deleteRow = (id) => setRows(rows.filter((row) => row._id !== id));
 
-  const handleCategoryFilter = (event) => {
-    setCategoryFilter(event.target.value);
+  const handleCategoryFilter = (e) => {
+    const category = e.target.value;
+    setCategoryFilter(category);
+    fetchTransactionsList(selectedMonth, category, rowsPerPage);
     setPage(0);
   };
 
@@ -128,30 +146,169 @@ const TransactionTable = () => {
     getComparator(order, orderBy)
   ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
-  const uniqueCategories = ["All", ...new Set(rows.map((row) => row.category))];
+  const uniqueCategories = [
+    {
+      key: "all",
+      label: "All",
+    },
+    ...EXPENDITURE_CATEGORIES,
+  ];
+
+  const renderMobileCards = () => (
+    <Box>
+      {rows.map((row) => (
+        <Paper
+          key={row._id}
+          elevation={3}
+          sx={{
+            p: 2,
+            mb: 2,
+            borderRadius: 2,
+          }}
+        >
+          <Box display="flex" justifyContent="space-between">
+            <strong>{moment(row.day).format("Do MMMM YYYY")}</strong>
+            <Chip
+              label={row.type}
+              color={
+                row.type === "SAVING" ||
+                row.type === "CREDIT" ||
+                row.type === "SAVINGS"
+                  ? "success"
+                  : "error"
+              }
+              size="small"
+            />
+          </Box>
+          <Box mt={1}>
+            <Box fontWeight={600} color="primary.main">
+              {row.category}
+            </Box>
+            <div>
+              Amount:{" "}
+              {editingId === row._id ? (
+                <TextField
+                  type="number"
+                  size="small"
+                  value={amountEdit}
+                  onChange={(e) => setAmountEdit(e.target.value)}
+                />
+              ) : (
+                <strong>₹{row.amount}</strong>
+              )}
+            </div>
+            {row.comment ? (
+              <div>
+                Comment: <strong>{row.comment}</strong>
+              </div>
+            ) : (
+              ""
+            )}
+          </Box>
+          <Box mt={1} display="flex" gap={1}>
+            {editingId === row._id ? (
+              <IconButton onClick={() => saveEdit(row._id)} color="primary">
+                <SaveIcon />
+              </IconButton>
+            ) : (
+              <IconButton onClick={() => startEdit(row)} color="secondary">
+                <EditIcon />
+              </IconButton>
+            )}
+            <IconButton onClick={() => deleteRow(row._id)} color="error">
+              <DeleteIcon />
+            </IconButton>
+          </Box>
+        </Paper>
+      ))}
+    </Box>
+  );
+
+  const renderDesktopTable = () => (
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {["date", "category", "type", "amount", "comment"].map((column) => (
+              <TableCell key={column}>
+                {/* <TableSortLabel
+                  active={orderBy === column}
+                  direction={orderBy === column ? order : "asc"}
+                  onClick={() => handleRequestSort(column)}
+                >
+                  {column.charAt(0).toUpperCase() + column.slice(1)}
+                </TableSortLabel> */}
+                <strong>
+                  {column.charAt(0).toUpperCase() + column.slice(1)}
+                </strong>
+              </TableCell>
+            ))}
+            <TableCell>
+              <strong>Actions</strong>
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow key={row._id}>
+              <TableCell>{moment(row.day).format("Do MMMM YYYY")}</TableCell>
+              <TableCell>{row.category}</TableCell>
+              <TableCell>
+                <Chip
+                  label={row.type}
+                  color={
+                    row.type === "SAVING" ||
+                    row.type === "CREDIT" ||
+                    row.type === "SAVINGS"
+                      ? "success"
+                      : "error"
+                  }
+                  size="small"
+                />
+              </TableCell>
+              <TableCell>
+                {editingId === row._id ? (
+                  <TextField
+                    type="number"
+                    size="small"
+                    value={amountEdit}
+                    onChange={(e) => setAmountEdit(e.target.value)}
+                  />
+                ) : (
+                  `₹${row.amount}`
+                )}
+              </TableCell>
+              <TableCell>{row.comment}</TableCell>
+              <TableCell>
+                {editingId === row._id ? (
+                  <IconButton onClick={() => saveEdit(row._id)} color="primary">
+                    <SaveIcon />
+                  </IconButton>
+                ) : (
+                  <IconButton onClick={() => startEdit(row)} color="secondary">
+                    <EditIcon />
+                  </IconButton>
+                )}
+                <IconButton onClick={() => deleteRow(row._id)} color="error">
+                  <DeleteIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <Box sx={{ p: 2 }}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <DatePicker
-            views={["year", "month"]}
-            label="Select Month"
-            minDate={new Date("2000-01-01")}
-            maxDate={new Date("2060-12-31")}
-            value={selectedDate}
-            onChange={(newValue) => {
-              setSelectedDate(newValue);
-              setPage(0); // optional: reset pagination
-            }}
-            renderInput={(params) => (
-              <TextField {...params} size="small" sx={{ minWidth: 200 }} />
-            )}
-          />
-        </LocalizationProvider>
-      </Box>
-
-      <Box sx={{ p: 2 }}>
+    <Paper sx={{ width: "100%", minHeight:"40vh", overflow: "hidden", p: 2 }}>
+      <Box
+        display="flex"
+        flexDirection={{ xs: "column", sm: "row" }}
+        gap={2}
+        mb={2}
+      >
+        <MonthYearPicker onMonthChange={handleMonthChange} />
         <FormControl size="small" sx={{ minWidth: 200 }}>
           <InputLabel>Filter by Category</InputLabel>
           <Select
@@ -160,102 +317,24 @@ const TransactionTable = () => {
             onChange={handleCategoryFilter}
           >
             {uniqueCategories.map((cat) => (
-              <MenuItem key={cat} value={cat}>
-                {cat}
+              <MenuItem key={cat.key} value={cat.key}>
+                {cat.label}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
       </Box>
 
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {["date", "category", "type", "amount"].map((column) => (
-                <TableCell key={column}>
-                  <TableSortLabel
-                    active={orderBy === column}
-                    direction={orderBy === column ? order : "asc"}
-                    onClick={() => handleRequestSort(column)}
-                  >
-                    {column.charAt(0).toUpperCase() + column.slice(1)}
-                  </TableSortLabel>
-                </TableCell>
-              ))}
-              <TableCell>
-                <strong>Actions</strong>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {visibleRows.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell>{row.day}</TableCell>
-                <TableCell>{row.category}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={row.type}
-                    color={
-                      row.type === "SAVING" || row.type === "CREDIT"
-                        ? "success"
-                        : "error"
-                    }
-                    variant="outlined"
-                    size="small"
-                    onClick={() => {}}
-                  />
-                </TableCell>
-
-                <TableCell>
-                  {editingId === row.id ? (
-                    <TextField
-                      type="number"
-                      size="small"
-                      value={amountEdit}
-                      onChange={(e) => setAmountEdit(e.target.value)}
-                    />
-                  ) : (
-                    row.amount
-                  )}
-                </TableCell>
-                <TableCell>
-                  {editingId === row.id ? (
-                    <IconButton
-                      onClick={() => saveEdit(row.id)}
-                      color="primary"
-                    >
-                      <SaveIcon />
-                    </IconButton>
-                  ) : (
-                    <IconButton
-                      onClick={() => startEdit(row)}
-                      color="secondary"
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  )}
-                  <IconButton onClick={() => deleteRow(row.id)} color="error">
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {isMobile ? renderMobileCards() : renderDesktopTable()}
 
       <TablePagination
-        rowsPerPageOptions={[10, 10, 10]}
-        component="div"
-        count={filteredRows.length}
         rowsPerPage={rowsPerPage}
+        component="div"
+        count={pageCount}
         page={page}
         onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
+        rowsPerPageOptions={[]}
       />
     </Paper>
   );
-};
-
-export default TransactionTable;
+}
