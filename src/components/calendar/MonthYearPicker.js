@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaRegCalendarAlt } from "react-icons/fa";
-import "./MonthYearPicker.css";
+import { Box, Button, MenuItem, Select, Typography, useTheme, Paper } from "@mui/material";
 import moment from "moment";
 
 const months = [
@@ -9,17 +9,16 @@ const months = [
 ];
 
 const MonthYearPicker = ({ onMonthChange }) => {
+  const theme = useTheme();
   const [showPicker, setShowPicker] = useState(false);
   const [selectedMonthYear, setSelectedMonthYear] = useState(moment().format("YYYY-MM").toString());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const pickerRef = useRef(null);
 
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 10 }, (_, i) => currentYear - 5 + i);
-  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const years = Array.from({ length: 10 }, (_, i) => selectedYear - 5 + i);
 
   const handleSelection = (monthIndex) => {
     const monthValue = `${selectedYear}-${String(monthIndex + 1).padStart(2, "0")}`;
-    console.log("monthValue",monthValue);
     setSelectedMonthYear(monthValue);
     setShowPicker(false);
     onMonthChange(monthValue);
@@ -37,46 +36,89 @@ const MonthYearPicker = ({ onMonthChange }) => {
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
     }
-
-    // Cleanup on unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showPicker]);
 
   return (
-    <div className="month-year-container" ref={pickerRef}>
-      <button className="trigger-button" onClick={() => setShowPicker(!showPicker)}>
-        <FaRegCalendarAlt className="calendar-icon" />
-        <span>{selectedMonthYear || "Select Month"}</span>
-      </button>
+    <Box ref={pickerRef} sx={{ position: "relative", display: "inline-block" }}>
+      <Button
+        variant="outlined"
+        startIcon={<FaRegCalendarAlt />}
+        onClick={() => setShowPicker(!showPicker)}
+        sx={{
+          color: theme.palette.text.primary,
+          borderColor: theme.palette.divider,
+          backgroundColor: theme.palette.background.paper,
+          "&:hover": {
+            backgroundColor: theme.palette.action.hover,
+          },
+        }}
+      >
+        {selectedMonthYear}
+      </Button>
 
       {showPicker && (
-        <div className="custom-picker-popup">
-          <select
+        <Paper
+          elevation={4}
+          sx={{
+            position: "absolute",
+            top: "110%",
+            left: 0,
+            zIndex: 10,
+            p: 2,
+            backgroundColor: theme.palette.background.paper,
+            border: `1px solid ${theme.palette.divider}`,
+            borderRadius: 2,
+            width: 250,
+          }}
+        >
+          <Select
+            fullWidth
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="year-dropdown"
+            size="small"
+            sx={{ mb: 2 }}
           >
             {years.map((year) => (
-              <option key={year} value={year}>{year}</option>
+              <MenuItem key={year} value={year}>
+                {year}
+              </MenuItem>
             ))}
-          </select>
+          </Select>
 
-          <div className="month-grid">
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 1,
+            }}
+          >
             {months.map((month, index) => (
-              <button
+              <Button
                 key={month}
                 onClick={() => handleSelection(index)}
-                className="month-button"
+                variant="contained"
+                sx={{
+                  fontSize: "0.75rem",
+                  textTransform: "none",
+                  padding: "6px",
+                  backgroundColor: theme.palette.mode === "dark" ? "#334155" : "#e2e8f0",
+                  color: theme.palette.text.primary,
+                  "&:hover": {
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText,
+                  },
+                }}
               >
                 {month}
-              </button>
+              </Button>
             ))}
-          </div>
-        </div>
+          </Box>
+        </Paper>
       )}
-    </div>
+    </Box>
   );
 };
 

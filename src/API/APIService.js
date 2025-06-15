@@ -47,7 +47,7 @@ export async function validateToken() {
 
 // Example: Get user data
 export async function fetchUserData() {
-  const res = await fetch(`${API_BASE_URL}/user/profile`, {
+  const res = await fetch(`${API_BASE_URL}/user/validate`, {
     method: "GET",
     headers: getAuthHeaders(),
   });
@@ -83,10 +83,38 @@ export async function saveExpenditure(payload) {
   }
 }
 
-export async function fetchTotalUserExpenditureAndIncome(month) {
+// Update Transaction API
+export async function updateTransaction(id, payload) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/transaction?id=${id}`, {
+      headers: getAuthHeaders(),
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+    return await res.json();
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function fetchTotalUserExpenditureAndIncome(payload) {
   try{
-     const res = await fetch(`${API_BASE_URL}/transaction/total?month=${month}`, {
+    if(!payload) return null;
+     const res = await fetch(`${API_BASE_URL}/transaction/total?month=${payload.month}&year=${payload.year}`, {
     method: "GET",
+    headers: getAuthHeaders(),
+  });
+  return await res.json();
+  } catch(error){
+    return null;
+  }
+}
+
+export async function deleteTransactionById(id) {
+  try{
+    if(!id) return null;
+     const res = await fetch(`${API_BASE_URL}/transaction?id=${id}`, {
+    method: "DELETE",
     headers: getAuthHeaders(),
   });
   return await res.json();

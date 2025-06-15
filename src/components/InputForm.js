@@ -51,8 +51,8 @@ export default function InputForm({ onExpenseAdded }) {
       amount: parseInt(expenditureAmount),
       category: selectedExpenditure,
       date: date,
-      day: moment.utc(date).format("YYYY-MM-DD"),
-      month: moment.utc(date).format("YYYY-MM"),
+      day: moment(date).format("YYYY-MM-DD"),
+      month: moment(date).format("YYYY-MM"),
       type: exObj.type,
       comment: comment
     };

@@ -28,8 +28,9 @@ import {
   ThemeProvider,
   createTheme,
 } from "@mui/material";
-import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import { FaMoneyBill, FaTint, FaSignOutAlt, FaListAlt } from "react-icons/fa";
+import { IoMdSettings } from "react-icons/io";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -41,8 +42,10 @@ import Logout from "./Logout";
 import MainApp from "./MainApp";
 import Calories from "./CaloriesTracker/Calories";
 import WaterTracker from "./trackers/WaterTracker";
+import ProfileSettings from "./Pages/ProfileSettings";
 import { validateToken } from "./API/APIService";
 import TransactionTable from "./components/TransactionTable";
+import { isDragActive } from "framer-motion";
 
 function Expenditure() {
   return <Typography variant="h6">Expenditure Page</Typography>;
@@ -58,6 +61,7 @@ function HeaderTitle() {
     "/waterTracker": "Water Intake",
     "/calories": "Calories Tracker",
     "/expenditure": "Expenditure",
+    "/profileSettings": "Profile"
   };
   const title = pathTitleMap[location.pathname] || "Expenses";
   return (
@@ -121,9 +125,11 @@ export default function App() {
     <Box
       sx={{
         p: 2,
-        backgroundColor: "#e0e7ff",
         color: "#111827",
         height: "100%",
+        ...(!darkMode && {
+          backgroundColor: "#e0e7ff",
+        }),
       }}
     >
       <Box
@@ -132,7 +138,14 @@ export default function App() {
         alignItems="center"
         mb={2}
       >
-        <Typography variant="h6">
+        <Typography
+          variant="h6"
+          sx={{
+            ...(darkMode && {
+              color: "white",
+            }),
+          }}
+        >
           {!collapsed && user && `👋 Welcome, ${user}`}
         </Typography>
         <IconButton
@@ -146,7 +159,7 @@ export default function App() {
       <List
         subheader={
           !collapsed && (
-            <ListSubheader component="div" sx={subheaderSx}>
+            <ListSubheader component="div" sx={!darkMode ? subheaderSx : {}}>
               Finance
             </ListSubheader>
           )
@@ -161,7 +174,16 @@ export default function App() {
             <ListItemIcon>
               <FaMoneyBill />
             </ListItemIcon>
-            {!collapsed && <ListItemText primary="Expenditure" />}
+            {!collapsed && (
+              <ListItemText
+                primary="Expenditure"
+                sx={{
+                  ...(darkMode && {
+                    color: "white",
+                  }),
+                }}
+              />
+            )}
           </ListItem>
         </Tooltip>
         <Tooltip
@@ -173,15 +195,24 @@ export default function App() {
             <ListItemIcon>
               <FaListAlt />
             </ListItemIcon>
-            {!collapsed && <ListItemText primary="Transactions" />}
+            {!collapsed && (
+              <ListItemText
+                primary="Transactions"
+                sx={{
+                  ...(darkMode && {
+                    color: "white",
+                  }),
+                }}
+              />
+            )}
           </ListItem>
         </Tooltip>
       </List>
-      <Divider sx={{ my: 2 }} />
+      {/* <Divider sx={{ my: 2 }} />
       <List
         subheader={
           !collapsed && (
-            <ListSubheader component="div" sx={subheaderSx}>
+            <ListSubheader component="div" sx={!darkMode ? subheaderSx : {}}>
               Health
             </ListSubheader>
           )
@@ -197,6 +228,33 @@ export default function App() {
               <FaTint />
             </ListItemIcon>
             {!collapsed && <ListItemText primary="Water Intake" />}
+          </ListItem>
+        </Tooltip>
+      </List> */}
+       <Divider sx={{ my: 2 }} />
+      <List
+        subheader={
+          !collapsed && (
+            <ListSubheader component="div" sx={!darkMode ? subheaderSx : {}}>
+              Settings
+            </ListSubheader>
+          )
+        }
+      >
+        <Tooltip
+          title="Profile"
+          placement="right"
+          disableHoverListener={!collapsed}
+        >
+          <ListItem button component={NavLink} to="/profileSettings">
+            <ListItemIcon>
+              <IoMdSettings />
+            </ListItemIcon>
+            {!collapsed && <ListItemText  sx={{
+                  ...(darkMode && {
+                    color: "white",
+                  }),
+                }} primary="Profile" />}
           </ListItem>
         </Tooltip>
       </List>
@@ -283,9 +341,11 @@ export default function App() {
                     width: collapsed ? 72 : drawerWidth,
                     transition: "width 0.3s",
                     overflowX: "hidden",
-                    backgroundColor: "#e0e7ff",
                     color: "#111827",
                     boxSizing: "border-box",
+                    ...(!darkMode && {
+                      backgroundColor: "#e0e7ff",
+                    }),
                   },
                 }}
                 open
@@ -347,6 +407,12 @@ export default function App() {
                 path="/waterTracker"
                 element={
                   user ? <WaterTracker /> : <Navigate to="/login" replace />
+                }
+              />
+               <Route
+                path="/profileSettings"
+                element={
+                  user ? <ProfileSettings /> : <Navigate to="/login" replace />
                 }
               />
               <Route

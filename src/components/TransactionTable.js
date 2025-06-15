@@ -19,15 +19,21 @@ import {
   Chip,
   useTheme,
   useMediaQuery,
+  Tooltip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import moment from "moment";
-import { fetchTransactions } from "../API/APIService";
+import {
+  fetchTransactions,
+  deleteTransactionById,
+  updateTransaction,
+} from "../API/APIService";
 import { EXPENDITURE_CATEGORIES_MAP } from "../helpers/constants";
-import MonthYearPicker from "./calendar/MonthYearPicker";
+import MonthYearPicker from "./Calendar/MonthYearPicker";
 import { EXPENDITURE_CATEGORIES } from "../helpers/constants";
+import { toast } from "react-toastify";
 
 const descendingComparator = (a, b, orderBy) => {
   if (b[orderBy] < a[orderBy]) return -1;
@@ -65,12 +71,12 @@ export default function TransactionTable() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
-    fetchTransactionsList(selectedMonth, "", rowsPerPage, page);
+    fetchTransactionsList(selectedMonth, categoryFilter, rowsPerPage, page);
   }, []);
 
   const fetchTransactionsList = async (month, category = "", limit, offset) => {
     try {
-      category = category === 'all'?'':category;
+      category = category === "all" ? "" : category;
       const res = await fetchTransactions(month, category, limit, offset);
       if (res && res.transactions.length) {
         setPageCount(res.totalCount);
@@ -107,8 +113,13 @@ export default function TransactionTable() {
 
   const handleMonthChange = (month) => {
     setMonth(month);
-    fetchTransactionsList(month, categoryFilter, rowsPerPage, page);
-  }
+    fetchTransactionsList(
+      month,
+      categoryFilter,
+      rowsPerPage,
+      page * rowsPerPage
+    );
+  };
   const handleChangeRowsPerPage = (e) => {
     setRowsPerPage(parseInt(e.target.value, 10));
     setPage(0);
@@ -120,14 +131,35 @@ export default function TransactionTable() {
   };
 
   const saveEdit = (id) => {
-    const updatedRows = rows.map((row) =>
-      row._id === id ? { ...row, amount: parseFloat(amountEdit) } : row
-    );
-    setRows(updatedRows);
-    setEditingId(null);
+    if (id && amountEdit && amountEdit !== "0") {
+      updateTransaction(id, { amount: parseInt(amountEdit) })
+        .then((res) => {
+          setEditingId(null);
+          toast.success("Updated Successfully");
+          fetchTransactionsList(
+            selectedMonth,
+            categoryFilter,
+            rowsPerPage,
+            page * rowsPerPage
+          );
+        })
+        .catch((error) => toast.error("Failed to update"));
+    }
   };
 
-  const deleteRow = (id) => setRows(rows.filter((row) => row._id !== id));
+  const deleteRow = (id) => {
+    deleteTransactionById(id)
+      .then((resp) => {
+        fetchTransactionsList(
+          selectedMonth,
+          categoryFilter,
+          rowsPerPage,
+          page * rowsPerPage
+        );
+        toast.success("Deleted Successfully");
+      })
+      .catch((error) => toast.error("Failed to delete"));
+  };
 
   const handleCategoryFilter = (e) => {
     const category = e.target.value;
@@ -178,6 +210,7 @@ export default function TransactionTable() {
                   : "error"
               }
               size="small"
+              onClick={() => {}}
             />
           </Box>
           <Box mt={1}>
@@ -192,6 +225,17 @@ export default function TransactionTable() {
                   size="small"
                   value={amountEdit}
                   onChange={(e) => setAmountEdit(e.target.value)}
+                  sx={{
+                    input: {
+                      color: "text.primary",
+                      backgroundColor: "background.paper",
+                    },
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "divider",
+                      },
+                    },
+                  }}
                 />
               ) : (
                 <strong>₹{row.amount}</strong>
@@ -207,17 +251,23 @@ export default function TransactionTable() {
           </Box>
           <Box mt={1} display="flex" gap={1}>
             {editingId === row._id ? (
-              <IconButton onClick={() => saveEdit(row._id)} color="primary">
-                <SaveIcon />
-              </IconButton>
+              <Tooltip title="Save" arrow>
+                <IconButton onClick={() => saveEdit(row._id)} color="primary">
+                  <SaveIcon />
+                </IconButton>
+              </Tooltip>
             ) : (
-              <IconButton onClick={() => startEdit(row)} color="secondary">
-                <EditIcon />
-              </IconButton>
+              <Tooltip title="Edit" arrow>
+                <IconButton onClick={() => startEdit(row)} color="secondary">
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
             )}
-            <IconButton onClick={() => deleteRow(row._id)} color="error">
-              <DeleteIcon />
-            </IconButton>
+            <Tooltip title="Delete" arrow>
+              <IconButton onClick={() => deleteRow(row._id)} color="error">
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Paper>
       ))}
@@ -264,6 +314,7 @@ export default function TransactionTable() {
                       : "error"
                   }
                   size="small"
+                  onClick={() => {}}
                 />
               </TableCell>
               <TableCell>
@@ -273,6 +324,17 @@ export default function TransactionTable() {
                     size="small"
                     value={amountEdit}
                     onChange={(e) => setAmountEdit(e.target.value)}
+                    sx={{
+                      input: {
+                        color: "text.primary",
+                        backgroundColor: "background.paper",
+                      },
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "divider",
+                        },
+                      },
+                    }}
                   />
                 ) : (
                   `₹${row.amount}`
@@ -281,17 +343,29 @@ export default function TransactionTable() {
               <TableCell>{row.comment}</TableCell>
               <TableCell>
                 {editingId === row._id ? (
-                  <IconButton onClick={() => saveEdit(row._id)} color="primary">
-                    <SaveIcon />
-                  </IconButton>
+                  <Tooltip title="Save" arrow>
+                    <IconButton
+                      onClick={() => saveEdit(row._id)}
+                      color="primary"
+                    >
+                      <SaveIcon />
+                    </IconButton>
+                  </Tooltip>
                 ) : (
-                  <IconButton onClick={() => startEdit(row)} color="secondary">
-                    <EditIcon />
-                  </IconButton>
+                  <Tooltip title="Edit" arrow>
+                    <IconButton
+                      onClick={() => startEdit(row)}
+                      color="secondary"
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  </Tooltip>
                 )}
-                <IconButton onClick={() => deleteRow(row._id)} color="error">
-                  <DeleteIcon />
-                </IconButton>
+                <Tooltip title="Delete" arrow>
+                  <IconButton onClick={() => deleteRow(row._id)} color="error">
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
               </TableCell>
             </TableRow>
           ))}
@@ -301,7 +375,7 @@ export default function TransactionTable() {
   );
 
   return (
-    <Paper sx={{ width: "100%", minHeight:"40vh", overflow: "hidden", p: 2 }}>
+    <Paper sx={{ width: "100%", minHeight: "40vh", overflow: "hidden", p: 2 }}>
       <Box
         display="flex"
         flexDirection={{ xs: "column", sm: "row" }}
