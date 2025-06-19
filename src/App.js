@@ -43,7 +43,7 @@ import MainApp from "./MainApp";
 import Calories from "./CaloriesTracker/Calories";
 import WaterTracker from "./trackers/WaterTracker";
 import ProfileSettings from "./Pages/ProfileSettings";
-import { validateToken } from "./API/APIService";
+import { validateToken, getUniqueVisit } from "./API/APIService";
 import TransactionTable from "./components/TransactionTable";
 import { isDragActive } from "framer-motion";
 
@@ -76,6 +76,7 @@ export default function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [uniqueUserCount, setUniqueUserCount] = useState(0);
 
   const theme = createTheme({
     palette: {
@@ -88,6 +89,8 @@ export default function App() {
       const userName = localStorage.getItem("userName");
       try {
         await validateToken();
+        const count = await getUniqueVisit();
+        setUniqueUserCount(count.count);
         if (userName) setUser(userName);
       } catch {
         handleLogout();
@@ -272,6 +275,10 @@ export default function App() {
           </Button>
         </ListItem>
       </List>
+      <Divider sx={{ my: 2 }} />
+      <Box sx={{ textAlign: "center", px: 1, fontSize: "0.75rem", color: darkMode ? "#aaa" : "#333" }}>
+        Unique Visits: {uniqueUserCount}
+      </Box>
     </Box>
   );
 

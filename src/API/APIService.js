@@ -147,3 +147,15 @@ export async function signUp(payload) {
     console.log(error);
   }
 }
+
+// Token validation API
+export async function getUniqueVisit() {
+  const res = await fetch(`${API_BASE_URL}/uservisit`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    throw new Error("Token invalid");
+  }
+  return await res.json(); // Returns user or success response
+}
