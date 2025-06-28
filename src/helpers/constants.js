@@ -21,7 +21,7 @@ export const EXPENDITURE_CATEGORIES = [
   },
   {
     key: "loans",
-    label: "Loans",
+    label: "Loan",
     type: "DEBIT",
   },
   {
@@ -36,7 +36,7 @@ export const EXPENDITURE_CATEGORIES = [
   },
   {
     key: "internet",
-    label: "Internet & Phone",
+    label: "Internet & Phone & Electricty",
     type: "DEBIT",
   },
   {
@@ -96,10 +96,10 @@ export const EXPENDITURE_CATEGORIES_MAP = {
     "food": "Food & Drinks",
     "groceries": "Groceries",
     "rent": "Rent",
-    "loans": "Loans",
+    "loans": "Loan",
     "entertainment": "Entertainment",
     "clothes": "Clothes",
-    "internet": "Internet & Phone",
+    "internet": "Internet & Phone & Electricty",
     "na": "No Category",
     "transfer": "Fund Transfer",
     "gadget": "Gadget",
@@ -111,3 +111,21 @@ export const EXPENDITURE_CATEGORIES_MAP = {
     "stocks": "Stocks",
     "health": "Health & Grooming"
 };
+
+export const CURRENCIES = [
+  { country: 'India', code: 'INR', name: 'Indian Rupee', symbol: '₹' },
+  { country: 'United States', code: 'USD', name: 'US Dollar', symbol: '$' },
+  { country: 'European Union', code: 'EUR', name: 'Euro', symbol: '€' },
+  { country: 'United Kingdom', code: 'GBP', name: 'British Pound', symbol: '£' },
+  { country: 'Japan', code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
+  { country: 'Canada', code: 'CAD', name: 'Canadian Dollar', symbol: '$' },
+  { country: 'Australia', code: 'AUD', name: 'Australian Dollar', symbol: '$' },
+  { country: 'Singapore', code: 'SGD', name: 'Singapore Dollar', symbol: '$' },
+  { country: 'Switzerland', code: 'CHF', name: 'Swiss Franc', symbol: 'CHF' },
+  { country: 'China', code: 'CNY', name: 'Chinese Yuan', symbol: '¥' },
+  { country: 'South Africa', code: 'ZAR', name: 'South African Rand', symbol: 'R' },
+  { country: 'Brazil', code: 'BRL', name: 'Brazilian Real', symbol: 'R$' },
+  { country: 'Mexico', code: 'MXN', name: 'Mexican Peso', symbol: '$' },
+  { country: 'Sweden', code: 'SEK', name: 'Swedish Krona', symbol: 'kr' },
+  { country: 'New Zealand', code: 'NZD', name: 'New Zealand Dollar', symbol: '$' },
+];

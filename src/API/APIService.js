@@ -83,6 +83,20 @@ export async function saveExpenditure(payload) {
   }
 }
 
+// update User API
+export async function updateUser(payload) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/user`, {
+      headers: getAuthHeaders(),
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+    return await res.json();
+  } catch (error) {
+    return null;
+  }
+}
+
 // Update Transaction API
 export async function updateTransaction(id, payload) {
   try {
@@ -134,6 +148,19 @@ export async function fetchTransactions(month, category=null, limit=10, offset=0
     return null;
   }
 }
+
+export async function getInsights(month) {
+  try{
+    const res = await fetch(`${API_BASE_URL}/transaction/insights?month=${month}`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  return await res.json();
+  } catch(error){
+    return null;
+  }
+}
+
 // Save Expenditure API
 export async function signUp(payload) {
   try {

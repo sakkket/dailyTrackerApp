@@ -5,6 +5,8 @@ import styles from "./SignupPage.module.css";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { signUp } from "./API/APIService";
+import { CURRENCIES } from "./helpers/constants";
+import { InputLabel, Select, MenuItem } from "@mui/material";
 
 export default function SignupPage({ onSignup, onLoginRedirect }) {
   const navigate = useNavigate();
@@ -14,6 +16,7 @@ export default function SignupPage({ onSignup, onLoginRedirect }) {
     email: "",
     password: "",
     confirmPassword: "",
+    currencyCode: "",
   });
 
   const handleChange = (e) => {
@@ -26,9 +29,13 @@ export default function SignupPage({ onSignup, onLoginRedirect }) {
       toast.error("Passwords do not match");
       return;
     }
+    if(form.password.length < 3){
+      toast.error("Passwords too small");
+      return;
+    }
     try {
-      delete form.confirmPassword;
       form.phone = parseInt(form.phone);
+      form["country"] = CURRENCIES.find(currency => currency.code === form.currencyCode);
       const result = await signUp(form);
       if (result && result._id) {
         toast.success("User created successfully!");
@@ -83,6 +90,19 @@ export default function SignupPage({ onSignup, onLoginRedirect }) {
           <option value="">Select Gender</option>
           <option value="male">Male</option>
           <option value="female">Female</option>
+        </select>
+        <select
+          labelId="currency-label"
+          id="currencyCode"
+          name="currencyCode"
+          value={form.currencyCode}
+          onChange={handleChange}
+          label="Preferred Currency"
+        >
+          <option value="">Preferred Currency</option>
+          {CURRENCIES.map((curr) => (
+            <option value={curr.code}>{curr.name + " " + curr.symbol}</option>
+          ))}
         </select>
         <input
           name="password"

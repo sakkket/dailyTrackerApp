@@ -34,6 +34,7 @@ import { EXPENDITURE_CATEGORIES_MAP } from "../helpers/constants";
 import MonthYearPicker from "./Calendar/MonthYearPicker";
 import { EXPENDITURE_CATEGORIES } from "../helpers/constants";
 import { toast } from "react-toastify";
+import { useGlobalStore } from "../store/globalStore";
 
 const descendingComparator = (a, b, orderBy) => {
   if (b[orderBy] < a[orderBy]) return -1;
@@ -63,9 +64,11 @@ export default function TransactionTable() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [editingId, setEditingId] = useState(null);
   const [amountEdit, setAmountEdit] = useState("");
+  const [commentEdit, setCommentEdit] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedMonth, setMonth] = useState(moment().format("YYYY-MM"));
   const [pageCount, setPageCount] = useState(0);
+  const currencySymbol = useGlobalStore((state) => state.currencySymbol);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -128,13 +131,15 @@ export default function TransactionTable() {
   const startEdit = (row) => {
     setEditingId(row._id);
     setAmountEdit(row.amount);
+    setCommentEdit(row.comment);
   };
 
   const saveEdit = (id) => {
     if (id && amountEdit && amountEdit !== "0") {
-      updateTransaction(id, { amount: parseInt(amountEdit) })
+      updateTransaction(id, { amount: parseInt(amountEdit), comment: commentEdit })
         .then((res) => {
-          setEditingId(null);
+          if(res && !res.error){
+             setEditingId(null);
           toast.success("Updated Successfully");
           fetchTransactionsList(
             selectedMonth,
@@ -142,6 +147,9 @@ export default function TransactionTable() {
             rowsPerPage,
             page * rowsPerPage
           );
+          } else{
+            toast.error("Update Failed");
+          }
         })
         .catch((error) => toast.error("Failed to update"));
     }
@@ -238,13 +246,34 @@ export default function TransactionTable() {
                   }}
                 />
               ) : (
-                <strong>₹{row.amount}</strong>
+                <strong>{currencySymbol + row.amount}</strong>
               )}
             </div>
             {row.comment ? (
               <div>
-                Comment: <strong>{row.comment}</strong>
-              </div>
+              Comment:
+              {editingId === row._id ? (
+                <TextField
+                  type="text"
+                  size="small"
+                  value={commentEdit}
+                  onChange={(e) => setCommentEdit(e.target.value)}
+                  sx={{
+                    input: {
+                      color: "text.primary",
+                      backgroundColor: "background.paper",
+                    },
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "divider",
+                      },
+                    },
+                  }}
+                />
+              ) : (
+               <strong>{' '+ row.comment}</strong>
+              )}
+            </div>
             ) : (
               ""
             )}
@@ -337,10 +366,32 @@ export default function TransactionTable() {
                     }}
                   />
                 ) : (
-                  `₹${row.amount}`
+                  `${currencySymbol + row.amount}`
                 )}
               </TableCell>
-              <TableCell>{row.comment}</TableCell>
+                   <TableCell>
+                {editingId === row._id ? (
+                  <TextField
+                    type="text"
+                    size="small"
+                    value={commentEdit}
+                    onChange={(e) => setCommentEdit(e.target.value)}
+                    sx={{
+                      input: {
+                        color: "text.primary",
+                        backgroundColor: "background.paper",
+                      },
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "divider",
+                        },
+                      },
+                    }}
+                  />
+                ) : (
+                  `${row.comment}`
+                )}
+              </TableCell>
               <TableCell>
                 {editingId === row._id ? (
                   <Tooltip title="Save" arrow>

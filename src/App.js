@@ -75,9 +75,8 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(localStorage.getItem("theme") === "true"? true:false);
   const [uniqueUserCount, setUniqueUserCount] = useState(0);
-
   const theme = createTheme({
     palette: {
       mode: darkMode ? "dark" : "light",
@@ -89,18 +88,29 @@ export default function App() {
       const userName = localStorage.getItem("userName");
       try {
         await validateToken();
-        const count = await getUniqueVisit();
-        setUniqueUserCount(count.count);
         if (userName) setUser(userName);
       } catch {
         handleLogout();
       }
     }
     autoLogin();
+
+    getUniqueVisit()
+    .then((res)=>{
+       setUniqueUserCount(res.count);
+    })
+    .catch(err => {})
   }, []);
 
   function handleLogin(name) {
     setUser(name);
+    setUniqueUserCount(localStorage.getItem("uniqueUser"))
+  }
+
+  function handleProfileChange(user) {
+    if(user && user.name) {
+      setUser(user.name);
+    }
   }
 
   function handleSignup(name) {
@@ -115,6 +125,10 @@ export default function App() {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+  const handleThemeChange = () => {
+    setDarkMode(!darkMode);
+    localStorage.setItem("theme",!darkMode)
+  }
 
   const subheaderSx = {
     color: "#4f46e5",
@@ -310,7 +324,7 @@ export default function App() {
                 <Box sx={{ flexGrow: 1 }} />
                 <IconButton
                   sx={{ ml: 1 }}
-                  onClick={() => setDarkMode(!darkMode)}
+                  onClick={handleThemeChange}
                   color="inherit"
                 >
                   {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
@@ -419,7 +433,7 @@ export default function App() {
                <Route
                 path="/profileSettings"
                 element={
-                  user ? <ProfileSettings /> : <Navigate to="/login" replace />
+                  user ? <ProfileSettings onProfileChange={handleProfileChange}/> : <Navigate to="/login" replace />
                 }
               />
               <Route

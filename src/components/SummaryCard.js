@@ -1,7 +1,13 @@
 import React, { useState, useEffect} from "react";
 import { useRef } from "react";
 import { Grid, Card, CardContent, Typography, Box } from "@mui/material";
+
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import CurrencyPoundIcon from '@mui/icons-material/CurrencyPound';
+import EuroIcon from '@mui/icons-material/Euro';
+import CurrencyYenIcon from '@mui/icons-material/CurrencyYen';
+import CurrencyYuanIcon from '@mui/icons-material/CurrencyYuan';
+
 import MoneyOffIcon from "@mui/icons-material/MoneyOff";
 import SavingsIcon from "@mui/icons-material/Savings";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
@@ -10,6 +16,7 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { fetchTotalUserExpenditureAndIncome } from "../API/APIService";
+import { useGlobalStore } from "../store/globalStore";
 import moment from "moment";
 import {
   useTheme,
@@ -29,7 +36,17 @@ const SummaryCards = ({ income, expenditure, saving, month, refresh }) => {
   const [totalExpenditure, setTotalExpenditureSoFar] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalSaving, setTotalSaving] = useState(0);
+  const currencyCode = useGlobalStore((state) => state.currencyCode);
+  const currencySymbol = useGlobalStore((state) => state.currencySymbol);
 
+  const currencyIconMapper = {
+    'INR': CurrencyRupeeIcon,
+    'USD': AttachMoneyIcon,
+    'EUR': EuroIcon,
+    'GBP': CurrencyPoundIcon,
+    'JPY': CurrencyYenIcon,
+    'CNY': CurrencyYuanIcon,
+  }
   async function fetchTotalExpenseAndIncome(selectedSummary) {
     try {
       const payload = {
@@ -65,6 +82,27 @@ const SummaryCards = ({ income, expenditure, saving, month, refresh }) => {
   };
   const iconRef = useRef(null);
 
+  const CurrencyDisplay = ({ currencyCode, balance }) => {
+  const IconComponent = currencyIconMapper[currencyCode] || AttachMoneyIcon;
+  return (
+    <IconComponent
+      fontSize="large"
+      style={{ color: balance < 0 ? 'red' : 'green' }}
+    />
+  );
+};
+
+const TotalIncomeDisplay = ({ currencyCode }) => {
+  const IconComponent = currencyIconMapper[currencyCode] || AttachMoneyIcon;
+  return (
+    <IconComponent
+      fontSize="large"
+      style={{ color: "green" }} 
+    />
+  );
+};
+
+
   const balance = totalIncome - (totalExpenditure + totalSaving);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -72,8 +110,8 @@ const SummaryCards = ({ income, expenditure, saving, month, refresh }) => {
     {
       label: "Balance",
       amount: balance,
-      icon: <CurrencyRupeeIcon fontSize="large" style={{ color: "green" }} />,
-      color: "green",
+      icon: <CurrencyDisplay currencyCode={currencyCode} balance={balance} />,
+      color: balance < 0 ?"red":"green",
     },
     {
       label: "Total Expenditure",
@@ -84,14 +122,14 @@ const SummaryCards = ({ income, expenditure, saving, month, refresh }) => {
     {
       label: "Total Income",
       amount: totalIncome,
-      icon: <CurrencyRupeeIcon fontSize="large" style={{ color: "green" }} />,
+      icon: <TotalIncomeDisplay currencyCode={currencyCode}/>,
       color: "green",
     },
     {
       label: "Total Savings",
       amount: totalSaving,
-      icon: <SavingsIcon fontSize="large" style={{ color: "blue" }} />,
-      color: "blue",
+      icon: <SavingsIcon fontSize="large" style={{ color: "green" }} />,
+      color: "green",
     },
   ];
 
@@ -101,7 +139,7 @@ const SummaryCards = ({ income, expenditure, saving, month, refresh }) => {
 
   if (isSmallScreen)
     return (
-      <Box width="100%">
+      <Box width="100%" mt={2}>
         <Grid item spacing={3}>
            <Card
             elevation={4}
@@ -115,7 +153,7 @@ const SummaryCards = ({ income, expenditure, saving, month, refresh }) => {
               justifyContent: "space-between",
               ...(theme.palette.mode === "light" && {
                 backgroundColor: "#e3f2fd",
-                borderRadius: 2,
+                borderRadius: 3,
               }),
             }}
           >
@@ -170,7 +208,8 @@ const SummaryCards = ({ income, expenditure, saving, month, refresh }) => {
 
           {cards.map((card, index) => (
             <Grid item xs={12} sm={6} key={index} mt={2}>
-              <Card elevation={4}>
+              <Card elevation={4}
+              sx={{ borderRadius: 3}}>
                 <CardContent>
                   <Box display="flex" alignItems="center" gap={2}>
                     {card.icon}
@@ -179,7 +218,7 @@ const SummaryCards = ({ income, expenditure, saving, month, refresh }) => {
                         {card.label}
                       </Typography>
                       <Typography variant="h6" style={{ color: card.color }}>
-                        ₹{card.amount.toLocaleString()}
+                        {(currencySymbol || '₹') + card.amount.toLocaleString()}
                       </Typography>
                     </Box>
                   </Box>
@@ -192,7 +231,7 @@ const SummaryCards = ({ income, expenditure, saving, month, refresh }) => {
     );
   else {
     return (
-      <Box width="100%">
+      <Box width="100%" mt={2}>
         <Grid container spacing={2}>
           <Card
             elevation={4}
@@ -206,7 +245,7 @@ const SummaryCards = ({ income, expenditure, saving, month, refresh }) => {
               justifyContent: "space-between",
               ...(theme.palette.mode === "light" && {
                 backgroundColor: "#e3f2fd",
-                borderRadius: 2,
+                borderRadius: 3,
               }),
             }}
           >
@@ -261,7 +300,7 @@ const SummaryCards = ({ income, expenditure, saving, month, refresh }) => {
 
           {cards.map((card, index) => (
             <Grid item xs={12} sm={6} key={index}>
-              <Card elevation={3} sx={12} sm={6} md={3}>
+              <Card elevation={3} sx={{ borderRadius: 3}} sm={6} md={3}>
                 <CardContent>
                   <Box display="flex" alignItems="center" gap={2}>
                     {card.icon}
@@ -270,7 +309,7 @@ const SummaryCards = ({ income, expenditure, saving, month, refresh }) => {
                         {card.label}
                       </Typography>
                       <Typography variant="h6" style={{ color: card.color }}>
-                        ₹{card.amount.toLocaleString()}
+                        {(currencySymbol || '₹') + card.amount.toLocaleString()}
                       </Typography>
                     </Box>
                   </Box>

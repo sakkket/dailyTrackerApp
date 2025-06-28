@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import styles from "./LoginPage.module.css";
-import { login } from "./API/APIService";
+import { login, getUniqueVisit } from "./API/APIService";
 import { toast } from "react-toastify";
+import { useGlobalStore } from "./store/globalStore";
 
 export default function Login({ onLogin }) {
+  const setUser = useGlobalStore((state) => state.setUser);
+  const setCurrencySymbol = useGlobalStore((state) => state.setCurrencySymbol);
+  const setCurrencyCode = useGlobalStore((state) => state.setCurrencyCode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -14,11 +18,24 @@ export default function Login({ onLogin }) {
     try {
       const data = await login(email, password);
       const { accessToken, user } = data;
+      setUser(user);
+      setCurrencySymbol(user?.country?.symbol || '₹');
+      setCurrencyCode(user?.currencyCode || 'INR')
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("userName", user.name);
-      onLogin(user.name);
-      navigate("/");
+      try{
+        const uniqueVisit = await getUniqueVisit();
+        localStorage.setItem("uniqueUser", uniqueVisit.count);
+      
+      } catch(err){
+         localStorage.setItem("uniqueUser",1);  
+      } 
+      finally{
+         onLogin(user.name);
+         navigate("/");
+      }
     } catch (err) {
+      console.log(err);
       toast.error("Login Failed");
     }
   }

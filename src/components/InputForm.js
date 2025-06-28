@@ -4,6 +4,7 @@ import { saveExpenditure } from "../API/APIService";
 import moment from "moment";
 import { toast } from "react-toastify";
 import { EXPENDITURE_CATEGORIES } from "../helpers/constants";
+import { useGlobalStore } from "../store/globalStore";
 
 const GROUPED_EXPENDITURE_CATEGORIES = [
   {
@@ -36,6 +37,8 @@ export default function InputForm({ onExpenseAdded }) {
   const [expenditureAmount, setExpenditureAmount] = useState();
   const [groupCategory, setGroupCategory] = useState("Expenditure");
   const [comment, setComment] = useState("");
+  const currencySymbol = useGlobalStore((state) => state.currencySymbol);
+  const currencyCode = useGlobalStore((state) => state.currencyCode); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,7 +56,9 @@ export default function InputForm({ onExpenseAdded }) {
       date: date,
       day: moment(date).format("YYYY-MM-DD"),
       month: moment(date).format("YYYY-MM"),
+      year: moment(date).format("YYYY"),
       type: exObj.type,
+      currencyCode: currencyCode || 'INR',
       comment: comment
     };
     const res = await saveExpenditure(payload);
@@ -107,7 +112,7 @@ export default function InputForm({ onExpenseAdded }) {
       </div>
 
       <div className={styles.row}>
-        <label>Amount (₹):</label>
+        <label>Amount ({currencySymbol || '₹'}):</label>
         <input
           type="number"
           value={expenditureAmount}

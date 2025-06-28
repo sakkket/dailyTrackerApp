@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Dashboard.module.css";
-import {
-  fetchUserExpenditure,
-} from "../API/APIService";
+import { fetchUserExpenditure, getInsights } from "../API/APIService";
 import moment from "moment";
 import { FaPlusCircle } from "react-icons/fa";
-import { Container, Box, Button, Tooltip as MuiTooltip } from "@mui/material";
+import {
+  Container,
+  Box,
+  Button,
+  Tooltip as MuiTooltip,
+  Typography,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import SummaryCards from "./SummaryCard";
 import MonthYearPicker from "./Calendar/MonthYearPicker";
 import CustomBarChart from "./BarChart/CustomBarChart";
 import CustomLineChart from "./LineChart/CustomLineChart";
 import CategoryChart from "./CategoryChart/CategoryChart";
 import CustomPieGraph from "./PieChart/CustomPieGraph";
+import UserInsights from "./Insights/Insights";
 
 export default function Dashboard({ refresh, openAddExpenseModal }) {
   const [totalExpenditure, setTotalExpenditureSoFar] = useState(0);
@@ -23,6 +30,10 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
   const [graphData, setGraphData] = useState([]);
   const [graphDataYearly, setGraphDataYearly] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(moment().format("YYYY-MM"));
+  const currentMonthOfYear = moment().format("YYYY-MM");
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [insights, setInsights] = useState({})
 
   async function handleMonthChange(month) {
     setCurrentMonth(month);
@@ -91,6 +102,8 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
   useEffect(() => {
     fetchExpense(view);
     fetchMonthlyExpense();
+    getInsights(currentMonthOfYear)
+    .then((res)=> setInsights(res));
   }, [refresh, view]);
 
   const expenditureCategories = {
@@ -98,10 +111,10 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
     food: "Food & Drinks",
     groceries: "Groceries",
     rent: "Rent",
-    loans: "Loans",
+    loans: "Loan",
     entertainment: "Entertainment",
     clothes: "Clothes",
-    internet: "Internet & Phone",
+    internet: "Internet & Phone & Electricty",
     na: "No Category",
     transfer: "Fund Transfer",
     gadget: "Gadget",
@@ -129,13 +142,23 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
     <div>
       <Container maxWidth="lg">
         <Box mt={2}>
+          <Typography variant="h6" fontWeight={500}>
+            Summary
+          </Typography>
+
           <SummaryCards
             income={totalIncome}
             expenditure={totalExpenditure}
             saving={totalSavings}
             month={currentMonth}
-            refresh= {refresh}
+            refresh={refresh}
           />
+          <Typography variant="h6" mt={4} fontWeight={500}>
+            Insights & Trends
+          </Typography>
+          <Box mt={2}>
+            <UserInsights insights={insights}/>
+          </Box>
           <Box
             display="flex"
             justifyContent="space-between"
@@ -144,41 +167,83 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
           >
             {/* Left Component */}
             <MonthYearPicker onMonthChange={handleMonthChange} />
-            <MuiTooltip title="Add New Transaction" arrow>
-              <Button
-                variant="contained"
-                color="success"
-                onClick={openAddExpense}
-              >
-                <FaPlusCircle style={{ marginRight: "8px" }} />
-                Add
-              </Button>
-            </MuiTooltip>
+            <Box
+              sx={{
+                position: "fixed",
+                bottom: { xs: 16, sm: 24 }, // responsive bottom spacing
+                right: { xs: 16, sm: 24 }, // responsive right spacing
+                zIndex: 1300, // ensure it's above other components
+              }}
+            >
+              <MuiTooltip title="Add New Transaction" arrow>
+                {isSmallScreen ? (
+                  <Button
+                    variant="contained"
+                    color="success"
+                    onClick={openAddExpense}
+                    sx={{
+                      minWidth: 0,
+                      width: 56,
+                      height: 56,
+                      borderRadius: "50%",
+                      padding: 0,
+                    }}
+                  >
+                    <FaPlusCircle size={24} />
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    color="success"
+                    onClick={openAddExpense}
+                    startIcon={<FaPlusCircle size={20} />}
+                    sx={{
+                      px: 2, // horizontal padding
+                      py: 1.5, // vertical padding
+                      fontSize: "1rem", // increase font size
+                      borderRadius: "10px", // optional: rounder edges
+                    }}
+                  >
+                    Add
+                  </Button>
+                )}
+              </MuiTooltip>
+            </Box>
           </Box>
         </Box>
       </Container>
       <div className={styles.chartGrid}>
         <CustomBarChart
-          title={"Daily Expenditure: " + moment(currentMonth).format("MMMM YYYY")}
+          title={
+            "Daily Expenditure: " + moment(currentMonth).format("MMMM YYYY")
+          }
           keys={expenditureCategories}
           data={graphData}
           view={view}
         />
         <CustomLineChart
-          title={"Daily Total Expenditure: " + moment(currentMonth).format("MMMM YYYY")}
+          title={
+            "Daily Total Expenditure: " +
+            moment(currentMonth).format("MMMM YYYY")
+          }
           data={graphData}
           dataKey="totalExpenditure"
           color="#8884d8"
           view="daily"
         />
         <CategoryChart
-          title={"Monthly Expenditure: " + moment(currentMonth).format("MMMM YYYY")}
+          title={
+            "Monthly Expenditure: " + moment(currentMonth).format("MMMM YYYY")
+          }
           keys={expenditureCategories}
           data={categoryChart}
           view={view}
         />
         <CustomPieGraph
-          title={"Monthly Expenditure Breakdown: " + moment(currentMonth).format("MMMM YYYY")}
+          title={
+            "Monthly Expenditure Breakdown: " +
+            moment(currentMonth).format("MMMM YYYY")
+          }
           data={getPieData(pieChartData, expenditureCategories)}
           colors={COLORS}
         />
@@ -193,4 +258,3 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
     </div>
   );
 }
-
