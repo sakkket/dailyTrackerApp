@@ -50,7 +50,7 @@ const SummaryCards = ({ income, expenditure, saving, month, refresh }) => {
   async function fetchTotalExpenseAndIncome(selectedSummary) {
     try {
       const payload = {
-        month: selectedSummary === 'month'? moment().format("YYYY-MM"): '',
+        month: selectedSummary === 'month'? moment().format("YYYY-MM"): selectedSummary === 'lastMonth' ? moment().subtract(1, 'month').format('YYYY-MM'): '',
         year: selectedSummary === 'year'? currentYear :''
       }
       const totalExpenditureAndIncome = await fetchTotalUserExpenditureAndIncome(payload);
@@ -167,7 +167,9 @@ const TotalIncomeDisplay = ({ currencyCode }) => {
                     ? currentMonth
                     : summaryFilter === "year"
                     ? currentYear
-                    : "All Time"}
+                    : summaryFilter === "lastMonth"
+                    ? moment().subtract(1, 'month').format('MMM YYYY')
+                    :"All Time"}
                 </Typography>
                 <IconButton
                   size="small"
@@ -200,6 +202,7 @@ const TotalIncomeDisplay = ({ currencyCode }) => {
                 }}
               >
                 <MenuItem value="month">This Month</MenuItem>
+                <MenuItem value="lastMonth">Last Month</MenuItem>
                 <MenuItem value="year">This Year</MenuItem>
                 <MenuItem value="all">All Time</MenuItem>
               </Select>
@@ -259,7 +262,9 @@ const TotalIncomeDisplay = ({ currencyCode }) => {
                     ? currentMonth
                     : summaryFilter === "year"
                     ? currentYear
-                    : "All Time"}
+                    : summaryFilter === "lastMonth"
+                    ? moment().subtract(1, 'month').format('MMM YYYY')
+                    :"All Time"}
                 </Typography>
                 <IconButton
                   size="small"
@@ -292,6 +297,7 @@ const TotalIncomeDisplay = ({ currencyCode }) => {
                 }}
               >
                 <MenuItem value="month">This Month</MenuItem>
+                <MenuItem value="lastMonth">Last Month</MenuItem>
                 <MenuItem value="year">This Year</MenuItem>
                 <MenuItem value="all">All Time</MenuItem>
               </Select>

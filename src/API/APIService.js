@@ -186,3 +186,27 @@ export async function getUniqueVisit() {
   }
   return await res.json(); // Returns user or success response
 }
+
+// Get avaialable report lists
+export async function getAvailableReportsList(month) {
+  const res = await fetch(`${API_BASE_URL}/transaction/availableReports?month=${month}`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    throw new Error("Token invalid");
+  }
+  return await res.json(); // Returns user or success response
+}
+
+// Download report
+export async function downloadReport(month) {
+  const res = await fetch(`${API_BASE_URL}/transaction/downloadReport?month=${month}`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    throw new Error("Token invalid");
+  }
+  return res;
+}

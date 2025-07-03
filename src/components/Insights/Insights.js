@@ -15,7 +15,7 @@ const InsightCard = ({ icon, title, value, subtitle, color }) => {
     <Card
       sx={{
         height: 130,
-        minWidth: 230,
+        maxWidth: 250,
         backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#e3f2fd',
         borderRadius: 3,
         boxShadow: 3,
@@ -74,16 +74,16 @@ const UserInsights = ({ insights = {}}) => {
         <InsightCard
           icon={<TrendingDown color="error" fontSize="large" />}
           title="Predicted Spend"
-          value={`₹${insights.predictedEndOfMonthSpend || 0}`}
+          value={`₹${insights?.predictedEndOfMonthSpend || 0}`}
           subtitle="Expected by month end"
         />
       </Grid>
-      {insights.warnings?.length > 0 && (
+      {insights?.warnings?.length > 0 && (
         <Grid item xs={12}>
           <InsightCard
             icon={<TrendingDown color="error" fontSize="large" />}
             title="Warnings"
-            value={insights.warnings.join(', ')}
+            value={insights?.warnings.join(', ')}
             color="error.main"
           />
         </Grid>

@@ -30,12 +30,16 @@ import {
 } from "@mui/material";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import { FaMoneyBill, FaTint, FaSignOutAlt, FaListAlt } from "react-icons/fa";
+import PaymentsIcon from '@mui/icons-material/Payments';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import { IoMdSettings } from "react-icons/io";
+import SettingsIcon from '@mui/icons-material/Settings';
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import Login from "./Login";
 import Signup from "./Signup";
 import Logout from "./Logout";
@@ -43,6 +47,7 @@ import MainApp from "./MainApp";
 import Calories from "./CaloriesTracker/Calories";
 import WaterTracker from "./trackers/WaterTracker";
 import ProfileSettings from "./Pages/ProfileSettings";
+import ExpenditureReports from "./Pages/Report";
 import { validateToken, getUniqueVisit } from "./API/APIService";
 import TransactionTable from "./components/TransactionTable";
 import { isDragActive } from "framer-motion";
@@ -61,7 +66,8 @@ function HeaderTitle() {
     "/waterTracker": "Water Intake",
     "/calories": "Calories Tracker",
     "/expenditure": "Expenditure",
-    "/profileSettings": "Profile"
+    "/profileSettings": "Profile",
+    "/reports": "Reports",
   };
   const title = pathTitleMap[location.pathname] || "Expenses";
   return (
@@ -189,7 +195,7 @@ export default function App() {
         >
           <ListItem button component={NavLink} to="/">
             <ListItemIcon>
-              <FaMoneyBill />
+              <PaymentsIcon />
             </ListItemIcon>
             {!collapsed && (
               <ListItemText
@@ -210,11 +216,32 @@ export default function App() {
         >
           <ListItem button component={NavLink} to="/transactions">
             <ListItemIcon>
-              <FaListAlt />
+              <ListAltIcon />
             </ListItemIcon>
             {!collapsed && (
               <ListItemText
                 primary="Transactions"
+                sx={{
+                  ...(darkMode && {
+                    color: "white",
+                  }),
+                }}
+              />
+            )}
+          </ListItem>
+        </Tooltip>
+        <Tooltip
+          title="Reports"
+          placement="right"
+          disableHoverListener={!collapsed}
+        >
+          <ListItem button component={NavLink} to="/reports">
+            <ListItemIcon>
+              <AssessmentIcon />
+            </ListItemIcon>
+            {!collapsed && (
+              <ListItemText
+                primary="Reports"
                 sx={{
                   ...(darkMode && {
                     color: "white",
@@ -265,7 +292,7 @@ export default function App() {
         >
           <ListItem button component={NavLink} to="/profileSettings">
             <ListItemIcon>
-              <IoMdSettings />
+              <SettingsIcon />
             </ListItemIcon>
             {!collapsed && <ListItemText  sx={{
                   ...(darkMode && {
@@ -440,6 +467,12 @@ export default function App() {
                 path="/transactions"
                 element={
                   user ? <TransactionTable /> : <Navigate to="/login" replace />
+                }
+              />
+              <Route
+                path="/reports"
+                element={
+                  user ? <ExpenditureReports /> : <Navigate to="/login" replace />
                 }
               />
               <Route path="/expenditure" element={<Expenditure />} />

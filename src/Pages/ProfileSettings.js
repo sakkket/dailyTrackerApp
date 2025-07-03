@@ -32,6 +32,7 @@ export default function ProfileSettings({ onProfileChange }) {
   }
   useEffect(() => {
     fetchUserDetails()
+    .catch(error => console.log(error));
   }, []);
 
   const handleSave = async () => {
@@ -44,6 +45,8 @@ export default function ProfileSettings({ onProfileChange }) {
     }
     delete payload['createdAt'];
     delete payload['__v'];
+    delete payload['currencyCode'];
+    delete payload['country'];
     try{
        const updatedUser = await updateUser(payload);
     if (updatedUser &&  !updatedUser.statusCode) {

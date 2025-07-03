@@ -60,6 +60,16 @@ export const EXPENDITURE_CATEGORIES = [
     type: "DEBIT",
   },
   {
+    key: "creditcard",
+    label: "Credit Card Bill",
+    type: "DEBIT",
+  },
+   {
+    key: "household",
+    label: "Household",
+    type: "DEBIT",
+  },
+  {
     key: "car",
     label: "Car Fuel & Maintainance",
     type: "DEBIT",
@@ -109,7 +119,9 @@ export const EXPENDITURE_CATEGORIES_MAP = {
     "fd": "Fixed Deposit",
     "rd": "Recurring Deposit",
     "stocks": "Stocks",
-    "health": "Health & Grooming"
+    "health": "Health & Grooming",
+    "creditcard": "Credit Card Bill",
+    "household": "Household"
 };
 
 export const CURRENCIES = [
