@@ -210,3 +210,50 @@ export async function downloadReport(month) {
   }
   return res;
 }
+
+// create review
+export async function createReview(payload) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/review`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload),
+    });
+   if (!res.ok) {
+    throw new Error("Token invalid");
+  }
+  return await res.json();
+  } catch(error){ 
+    throw new Error("Error");
+  }
+}
+
+// check review exists 
+export async function checkReviewExists() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/review/exists`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+     if (!res.ok) {
+    throw new Error("Token invalid");
+  }
+  return await res.json();
+  } catch(error){ }
+}
+
+// check review exists 
+export async function getAllReview() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/review`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+     if (!res.ok) {
+    throw new Error("Token invalid");
+  }
+  return await res.json();
+  } catch(error){ 
+    throw new Error("Error");
+  }
+}

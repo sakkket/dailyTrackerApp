@@ -38,7 +38,7 @@ export default function SignupPage({ onSignup, onLoginRedirect }) {
       form["country"] = CURRENCIES.find(currency => currency.code === form.currencyCode);
       const result = await signUp(form);
       if (result && result._id) {
-        toast.success("User created successfully!");
+        toast.success("Registration complete. You can now log in.");
         navigate("/login");
       } else {
         toast.error("Signup failed");

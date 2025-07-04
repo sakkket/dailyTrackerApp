@@ -50,8 +50,8 @@ import ProfileSettings from "./Pages/ProfileSettings";
 import ExpenditureReports from "./Pages/Report";
 import { validateToken, getUniqueVisit } from "./API/APIService";
 import TransactionTable from "./components/TransactionTable";
-import { isDragActive } from "framer-motion";
-
+import FeedbackForm from "./Pages/Feedback";
+import RateReviewIcon from '@mui/icons-material/RateReview';
 function Expenditure() {
   return <Typography variant="h6">Expenditure Page</Typography>;
 }
@@ -68,6 +68,7 @@ function HeaderTitle() {
     "/expenditure": "Expenditure",
     "/profileSettings": "Profile",
     "/reports": "Reports",
+    "/feedback": "Feedback"
   };
   const title = pathTitleMap[location.pathname] || "Expenses";
   return (
@@ -302,7 +303,24 @@ export default function App() {
           </ListItem>
         </Tooltip>
       </List>
-      <Divider sx={{ my: 2 }} />
+       <List>
+        <Tooltip
+          title="Feedback"
+          placement="right"
+          disableHoverListener={!collapsed}
+        >
+          <ListItem button component={NavLink} to="/feedback">
+            <ListItemIcon>
+              <RateReviewIcon />
+            </ListItemIcon>
+            {!collapsed && <ListItemText  sx={{
+                  ...(darkMode && {
+                    color: "white",
+                  }),
+                }} primary="Feedback" />}
+          </ListItem>
+        </Tooltip>
+      </List>
       <List>
         <ListItem>
           <Button
@@ -473,6 +491,12 @@ export default function App() {
                 path="/reports"
                 element={
                   user ? <ExpenditureReports /> : <Navigate to="/login" replace />
+                }
+              />
+              <Route
+                path="/feedback"
+                element={
+                  user ? <FeedbackForm /> : <Navigate to="/login" replace />
                 }
               />
               <Route path="/expenditure" element={<Expenditure />} />
