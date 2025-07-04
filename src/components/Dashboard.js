@@ -115,7 +115,7 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
     entertainment: "Entertainment",
     clothes: "Clothes",
     internet: "Internet & Phone & Electricty",
-    na: "No Category",
+    na: "Miscellaneous",
     transfer: "Fund Transfer",
     gadget: "Gadget",
     car: "Car Fuel & Maintainance",

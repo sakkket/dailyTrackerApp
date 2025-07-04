@@ -41,7 +41,7 @@ export const EXPENDITURE_CATEGORIES = [
   },
   {
     key: "na",
-    label: "No Category",
+    label: "Miscellaneous",
     type: "DEBIT",
   },
   {
@@ -110,7 +110,7 @@ export const EXPENDITURE_CATEGORIES_MAP = {
     "entertainment": "Entertainment",
     "clothes": "Clothes",
     "internet": "Internet & Phone & Electricty",
-    "na": "No Category",
+    "na": "Miscellaneous",
     "transfer": "Fund Transfer",
     "gadget": "Gadget",
     "car": "Car Fuel & Maintainance",

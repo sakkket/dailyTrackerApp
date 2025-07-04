@@ -145,6 +145,14 @@ export default function App() {
     bgcolor: "transparent",
   };
 
+  const subheaderDarkSx = {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: "1rem",
+    lineHeight: "2.5",
+    bgcolor: "transparent",
+  };
+
   const drawer = (
     <Box
       sx={{
@@ -183,7 +191,7 @@ export default function App() {
       <List
         subheader={
           !collapsed && (
-            <ListSubheader component="div" sx={!darkMode ? subheaderSx : {}}>
+            <ListSubheader component="div" sx={darkMode ? subheaderDarkSx: subheaderSx}>
               Finance
             </ListSubheader>
           )
@@ -280,7 +288,7 @@ export default function App() {
       <List
         subheader={
           !collapsed && (
-            <ListSubheader component="div" sx={!darkMode ? subheaderSx : {}}>
+            <ListSubheader component="div" sx={darkMode ? subheaderDarkSx: subheaderSx}>
               Settings
             </ListSubheader>
           )
