@@ -30,7 +30,7 @@ export default function SignupPage({ onSignup, onLoginRedirect }) {
       return;
     }
     if(form.password.length < 3){
-      toast.error("Passwords too small");
+      toast.error("Password too small");
       return;
     }
     try {

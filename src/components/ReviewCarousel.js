@@ -17,13 +17,27 @@ export default function TopFeedbackCarousel() {
   const [reviews, setReviews] = useState([]);
   const [index, setIndex] = useState(0);
 
-  useEffect(() => {
-    getAllReview().then((res) => {
-      setReviews(res || []);
-      const randomNumber = Math.floor(Math.random() * res.length);
-      setIndex(randomNumber);
-    });
-  }, []);
+useEffect(() => {
+  let autoCarousel;
+  let isMounted = true;
+
+  getAllReview().then((res) => {
+    if (!isMounted) return; // safeguard
+    setReviews(res || []);
+    setIndex(0);
+
+    autoCarousel = setInterval(() => {
+      setIndex((prev) => (prev + 1) % res.length);
+    }, 4000);
+  });
+
+  return () => {
+    isMounted = false;
+    if (autoCarousel) clearInterval(autoCarousel);
+  };
+}, []);
+
+
 
   const handleNext = () => {
     setIndex((prev) => (prev + 1) % reviews.length);
