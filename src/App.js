@@ -69,7 +69,8 @@ function HeaderTitle() {
     "/expenditure": "Expenditure",
     "/profileSettings": "Profile",
     "/reports": "Reports",
-    "/feedback": "Feedback"
+    "/feedback": "Feedback",
+    "/info": "System Info"
   };
   const title = pathTitleMap[location.pathname] || "Expenses";
   return (

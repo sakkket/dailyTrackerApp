@@ -33,13 +33,13 @@ const RaspberryPiInfo = () => {
             setarchitecture(info.architecture);
         }
         if(info && info.cpuTemperature){
-            setcpuTemperature(info.cpuTemperature + 'C');
+            setcpuTemperature(info.cpuTemperature);
         }
         if(info && info.cpuUsage){
             setcpuUsage(info.cpuUsage);
         }
         if(info && info.memory){
-            setcpuUsage(info.memory);
+            setmemory(info.memory);
         }
     })
     .catch((error)=> console.log(error));
@@ -75,9 +75,9 @@ const RaspberryPiInfo = () => {
             <Typography variant="subtitle1" gutterBottom>
               CPU Usage
             </Typography>
-            {cpuUsage.map((usage, index) => (
+            {cpuUsage?.map((usage, index) => (
               <Box key={index} mb={1}>
-                <Typography variant="body2">Core {index}: {usage.toFixed(1)}%</Typography>
+                <Typography variant="body2">Core {index}: {usage?.toFixed(1)}%</Typography>
                 <LinearProgress variant="determinate" value={usage} />
               </Box>
             ))}
@@ -88,9 +88,9 @@ const RaspberryPiInfo = () => {
               Memory Usage
             </Typography>
             <Typography variant="body2">
-              Used: {memory.used.toFixed(2)} GB / {memory.total.toFixed(2)} GB
+              Used: {memory?.used?.toFixed(2)} GB / {memory?.total?.toFixed(2)} GB
             </Typography>
-            <LinearProgress variant="determinate" value={(memory.used / memory.total) * 100} />
+            <LinearProgress variant="determinate" value={(memory?.used / memory?.total) * 100} />
           </Box>
         </CardContent>
       </Card>
