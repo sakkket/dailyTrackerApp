@@ -52,6 +52,7 @@ import { validateToken, getUniqueVisit } from "./API/APIService";
 import TransactionTable from "./components/TransactionTable";
 import FeedbackForm from "./Pages/Feedback";
 import RateReviewIcon from '@mui/icons-material/RateReview';
+import RaspberryPiInfo from "./Pages/RaspberryPiInfo";
 function Expenditure() {
   return <Typography variant="h6">Expenditure Page</Typography>;
 }
@@ -505,6 +506,12 @@ export default function App() {
                 path="/feedback"
                 element={
                   user ? <FeedbackForm /> : <Navigate to="/login" replace />
+                }
+              />
+              <Route
+                path="/info"
+                element={
+                  <RaspberryPiInfo />
                 }
               />
               <Route path="/expenditure" element={<Expenditure />} />

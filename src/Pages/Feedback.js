@@ -7,12 +7,15 @@ import {
   Rating,
   useTheme,
   Paper,
+  Link
 } from "@mui/material";
 import { CheckCircleOutline } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import TopFeedbackCarousel from "../components/ReviewCarousel";
 import { createReview, checkReviewExists } from "../API/APIService";
 import { toast } from "react-toastify";
+import EmailIcon from '@mui/icons-material/Email';
+const currentYear = new Date().getFullYear();
 
 export default function FeedbackForm() {
   const theme = useTheme();
@@ -22,24 +25,24 @@ export default function FeedbackForm() {
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e) => {
-   e.preventDefault();
-   createReview({rating: rating, review: feedback})
-   .then((res) => {
-    if(res){
-        setSubmitted(true)
-    }
-   })
-   .catch(error => toast.error("Failed to submit feedback"));
+    e.preventDefault();
+    createReview({ rating: rating, review: feedback })
+      .then((res) => {
+        if (res) {
+          setSubmitted(true)
+        }
+      })
+      .catch(error => toast.error("Failed to submit feedback"));
   };
 
-   useEffect(() => {
+  useEffect(() => {
     checkReviewExists()
-    .then((res) => {
-        if(res && res === true){
-            setSubmitted(true);
+      .then((res) => {
+        if (res && res === true) {
+          setSubmitted(true);
         }
-    })
-   }, []);
+      })
+  }, []);
 
   return (
     <>
@@ -139,7 +142,7 @@ export default function FeedbackForm() {
           </motion.div>
         )}
       </Box>
-       <Box
+      <Box
         display="flex"
         justifyContent="center"
         alignItems="center"
@@ -148,6 +151,65 @@ export default function FeedbackForm() {
       >
         <TopFeedbackCarousel />
       </Box>
+
+      <Paper
+        component="footer"
+        elevation={2}
+        square
+        sx={{
+          mt: 6,
+          py: 3,
+          px: 2,
+          textAlign: "center",
+          bgcolor: theme.palette.mode === "dark"
+            ? theme.palette.grey[900]
+            : theme.palette.grey[100],
+        }}
+      >
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+          <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+            <EmailIcon fontSize="small" />
+            Email us at{" "}
+            <Link
+              href="mailto:admin@spendsavetrack.cc"
+              sx={{
+                color: theme.palette.primary.main,
+                fontWeight: 500,
+                textDecoration: "none",
+                "&:hover": {
+                  textDecoration: "underline",
+                  color: theme.palette.primary.dark,
+                },
+              }}
+            >
+              admin@spendsavetrack.cc
+            </Link>
+          </Box>
+        </Typography>
+
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+          <Link
+            href="https://sakkket.github.io/aboutme/"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{
+              color: theme.palette.primary.main,
+              fontWeight: 500,
+              textDecoration: "none",
+              "&:hover": {
+                textDecoration: "underline",
+                color: theme.palette.primary.dark,
+              },
+            }}
+          >
+            About Me
+          </Link>
+        </Typography>
+
+        <Typography variant="caption" color="text.secondary">
+          © {currentYear} Spend Save Track. All rights reserved.
+        </Typography>
+      </Paper>
     </>
   );
 }

@@ -1,6 +1,6 @@
 // src/api/api.js
 
-const API_BASE_URL = "http://192.168.0.114:3010";
+const API_BASE_URL = "https://resp.spendsavetrack.cc";
 
 // Helper to get token from localStorage
 function getAuthHeaders() {
@@ -248,6 +248,21 @@ export async function getAllReview() {
     const res = await fetch(`${API_BASE_URL}/review`, {
       method: "GET",
       headers: getAuthHeaders(),
+    });
+     if (!res.ok) {
+    throw new Error("Token invalid");
+  }
+  return await res.json();
+  } catch(error){ 
+    throw new Error("Error");
+  }
+}
+
+export async function getSystemInfo() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/user/infoSystemInfo`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
     });
      if (!res.ok) {
     throw new Error("Token invalid");
