@@ -12,6 +12,8 @@ import {
 import { format, parseISO } from "date-fns";
 import { useTheme } from "@mui/material/styles";
 import styles from "./CustomBarChart.module.css";
+import { useGlobalStore } from "../../store/globalStore";
+import moment from "moment";
 
 const lightColors = [
   "#4b0082", "#006400", "#b8860b", "#8b0000", "#008b8b",
@@ -28,7 +30,7 @@ const darkColors = [
 const CustomBarChart = ({ data, view, title, keys }) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
-
+  const currencySymbol = useGlobalStore((state) => state.currencySymbol) || '';
   const barColors = isDarkMode ? darkColors : lightColors;
   const axisStroke = isDarkMode ? "#e2e8f0" : "#475569";
   const tickFill = isDarkMode ? "#e2e8f0" : "#334155";
@@ -72,6 +74,8 @@ const CustomBarChart = ({ data, view, title, keys }) => {
             }}
             labelStyle={{ color: tickFill, fontWeight: "bold" }}
             itemStyle={{ color: tooltipText }}
+            formatter={(value) => `${currencySymbol+value}`}
+            labelFormatter={(label) => moment(label).format("DD MMM YYYY")}
           />
 
           <Legend

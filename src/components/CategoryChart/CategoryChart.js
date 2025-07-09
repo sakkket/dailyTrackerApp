@@ -10,11 +10,12 @@ import {
 } from "recharts";
 import { useTheme } from "@mui/material/styles";
 import styles from "./CategoryChart.module.css";
+import { useGlobalStore } from "../../store/globalStore";
 
 const CategoryChart = ({ title, data }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
-
+  const currencySymbol = useGlobalStore((state) => state.currencySymbol) || '';
   const axisStroke = isDark ? "#e2e8f0" : "#475569";
   const tickFill = isDark ? "#f1f5f9" : "#334155";
   const xTickFill = isDark ? "#f1f5f9" : "#2d3748";
@@ -56,6 +57,7 @@ const CategoryChart = ({ title, data }) => {
             }}
             labelStyle={{ color: tooltipText, fontWeight: "bold" }}
             itemStyle={{ color: barColor }}
+            formatter={(value) => `${currencySymbol+value}`}
           />
           <Bar dataKey="value" fill={barColor} barSize={40} />
         </BarChart>

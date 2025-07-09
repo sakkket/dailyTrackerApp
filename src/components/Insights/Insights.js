@@ -18,6 +18,7 @@ import {
 import TrendingFlatIcon from "@mui/icons-material/TrendingFlat";
 import InfoIcon from "@mui/icons-material/Info";
 import DifferenceIcon from "@mui/icons-material/Difference";
+import { useGlobalStore } from "../../store/globalStore";
 
 const InsightCard = ({ icon, title, value, subtitle, color }) => {
   const theme = useTheme();
@@ -86,6 +87,7 @@ const getPredictionIcons = (predictedEndOfMonthSpend) => {
   return output;
 };
 const UserInsights = ({ insights = {} }) => {
+  const currencySymbol = useGlobalStore((state) => state.currencySymbol) || '';
   const PredictionIconComponent = getPredictionIcons(
     insights?.predictedEndOfMonthSpend
   );
@@ -124,7 +126,7 @@ const UserInsights = ({ insights = {} }) => {
             />
           }
           title="Predicted Spend"
-          value={`₹${insights?.predictedEndOfMonthSpend?.nextMonth || 0}`}
+          value={`${currencySymbol + insights?.predictedEndOfMonthSpend?.nextMonth || 0}`}
           subtitle="Expected by month end"
         />
       </Grid>

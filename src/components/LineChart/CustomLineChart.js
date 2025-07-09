@@ -12,11 +12,13 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { parseISO, format } from "date-fns";
 import styles from "./CustomLineChart.module.css";
+import moment from "moment";
+import { useGlobalStore } from "../../store/globalStore";
 
 const CustomLineChart = ({ title, data, view, dataKey, color }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
-
+  const currencySymbol = useGlobalStore((state) => state.currencySymbol) || '';
   const axisStroke = isDark ? "#e2e8f0" : "#4a5568";
   const tickFill = isDark ? "#e2e8f0" : "#2d3748";
   const gridStroke = isDark ? "#475569" : "#cbd5e0";
@@ -25,7 +27,7 @@ const CustomLineChart = ({ title, data, view, dataKey, color }) => {
   const tooltipText = isDark ? "#f1f5f9" : "#2d3748";
   const itemColor = isDark ? "#38bdf8" : color;
   const legendColor = isDark ? "#f1f5f9" : "#2d3748";
-
+  const labelDateFormat = view === "daily" ? "DD MMM YYYY" : "MMM yyyy"
   return (
     <div className={styles.chartContainer}>
       <h3 className={styles.graphTitle}>{title}</h3>
@@ -53,6 +55,8 @@ const CustomLineChart = ({ title, data, view, dataKey, color }) => {
             }}
             labelStyle={{ color: tooltipText, fontWeight: "bold" }}
             itemStyle={{ color: itemColor }}
+            formatter={(value) => `${currencySymbol+value}`}
+            labelFormatter={(label) => moment(label).format(labelDateFormat)}
           />
           <Legend
             verticalAlign="top"

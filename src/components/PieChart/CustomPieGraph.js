@@ -9,17 +9,17 @@ import {
 } from "recharts";
 import { useTheme } from "@mui/material/styles";
 import styles from "./CustomPieGraph.module.css";
+import { useGlobalStore } from "../../store/globalStore";
 
 const CustomPieGraph = ({ title, data }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
-
+  const currencySymbol = useGlobalStore((state) => state.currencySymbol) || '';
   const tooltipBg = isDark ? "#1e293b" : "#ffffff";
   const tooltipBorder = isDark ? "#475569" : "#cbd5e1";
   const labelColor = isDark ? "#f1f5f9" : "#334155";
   const itemColor = isDark ? "#e2e8f0" : "#1e293b";
   const legendColor = isDark ? "#e2e8f0" : "#475569";
-  const titleColor = isDark ? "#e2e8f0" : "#1e293b";
 
   const COLORS = isDark
     ? [
@@ -74,6 +74,7 @@ const CustomPieGraph = ({ title, data }) => {
             }}
             labelStyle={{ color: labelColor, fontWeight: "bold" }}
             itemStyle={{ color: itemColor }}
+            formatter={(value) => `${currencySymbol+value}`}
           />
           <Legend
             wrapperStyle={{

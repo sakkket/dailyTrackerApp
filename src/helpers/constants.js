@@ -140,4 +140,9 @@ export const CURRENCIES = [
   { country: 'Mexico', code: 'MXN', name: 'Mexican Peso', symbol: '$' },
   { country: 'Sweden', code: 'SEK', name: 'Swedish Krona', symbol: 'kr' },
   { country: 'New Zealand', code: 'NZD', name: 'New Zealand Dollar', symbol: '$' },
+  { country: 'United Arab Emirates', code: 'AED', name: 'UAE Dirham', symbol: 'د.إ' },
+  { country: 'Saudi Arabia', code: 'SAR', name: 'Saudi Riyal', symbol: '﷼' },
+  { country: 'Qatar', code: 'QAR', name: 'Qatari Riyal', symbol: 'ر.ق' },
+  { country: 'Kuwait', code: 'KWD', name: 'Kuwaiti Dinar', symbol: 'د.ك' },
+  { country: 'Oman', code: 'OMR', name: 'Omani Rial', symbol: 'ر.ع.' },
 ];
