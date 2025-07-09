@@ -42,7 +42,6 @@ export default function InputForm({ onExpenseAdded }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    onExpenseAdded();
     if (!expenditureAmount || expenditureAmount === 0) {
       toast.error("Failed: Amount is zero");
       return;
@@ -63,6 +62,7 @@ export default function InputForm({ onExpenseAdded }) {
     };
     const res = await saveExpenditure(payload);
     if (res) {
+      onExpenseAdded();
       const message =
         selectedExpenditure === "income"
           ? "Income added successfully!"
