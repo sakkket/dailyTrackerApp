@@ -33,6 +33,7 @@ import { FaMoneyBill, FaTint, FaSignOutAlt, FaListAlt } from "react-icons/fa";
 import PaymentsIcon from '@mui/icons-material/Payments';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import { IoMdSettings } from "react-icons/io";
+import InsightsIcon from '@mui/icons-material/Insights';
 import SettingsIcon from '@mui/icons-material/Settings';
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -62,7 +63,7 @@ const drawerWidth = 240;
 function HeaderTitle() {
   const location = useLocation();
   const pathTitleMap = {
-    "/": "Monthly Expenses",
+    "/": "Expense Summary",
     "/transactions": "Transactions",
     "/waterTracker": "Water Intake",
     "/calories": "Calories Tracker",
@@ -200,17 +201,17 @@ export default function App() {
         }
       >
         <Tooltip
-          title="Expenditure"
+          title="Insights"
           placement="right"
           disableHoverListener={!collapsed}
         >
           <ListItem button component={NavLink} to="/">
             <ListItemIcon>
-              <PaymentsIcon />
+              <InsightsIcon />
             </ListItemIcon>
             {!collapsed && (
               <ListItemText
-                primary="Expenditure"
+                primary="Insights"
                 sx={{
                   ...(darkMode && {
                     color: "white",
