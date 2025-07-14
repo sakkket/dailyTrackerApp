@@ -121,7 +121,8 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
     car: "Car Fuel & Maintainance",
     health: "Health & Grooming",
     creditcard: "Credit Card Bill",
-    household: "Household"
+    household: "Household",
+    gift: "Gift"
   };
   const getPieData = (sourceData, keys) =>
     Object.keys(keys)

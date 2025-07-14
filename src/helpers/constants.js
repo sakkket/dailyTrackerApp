@@ -30,6 +30,11 @@ export const EXPENDITURE_CATEGORIES = [
     type: "DEBIT",
   },
   {
+    key: "gift",
+    label: "Gift",
+    type: "DEBIT",
+  },
+  {
     key: "clothes",
     label: "Clothes",
     type: "DEBIT",
@@ -99,6 +104,11 @@ export const EXPENDITURE_CATEGORIES = [
     label: "Stocks",
     type: "SAVINGS",
   },
+  {
+    key: "savingacc",
+    label: "Savings Account",
+    type: "SAVINGS",
+  },
 ];
 
 export const EXPENDITURE_CATEGORIES_MAP = {
@@ -121,7 +131,9 @@ export const EXPENDITURE_CATEGORIES_MAP = {
     "stocks": "Stocks",
     "health": "Health & Grooming",
     "creditcard": "Credit Card Bill",
-    "household": "Household"
+    "household": "Household",
+    "gift": "Gift",
+    "savingacc": "Savings Account"
 };
 
 export const CURRENCIES = [
