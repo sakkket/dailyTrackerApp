@@ -1,7 +1,7 @@
 // src/api/api.js
 
-const API_BASE_URL = "https://resp.spendsavetrack.cc";
-//const API_BASE_URL = "http://localhost:3010"
+//const API_BASE_URL = "https://resp.spendsavetrack.cc";
+const API_BASE_URL = "http://localhost:3010"
 
 // Helper to get token from localStorage
 function getAuthHeaders() {

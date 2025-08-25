@@ -38,36 +38,46 @@ export default function InputForm({ onExpenseAdded }) {
   const [groupCategory, setGroupCategory] = useState("Expenditure");
   const [comment, setComment] = useState("");
   const currencySymbol = useGlobalStore((state) => state.currencySymbol);
-  const currencyCode = useGlobalStore((state) => state.currencyCode); 
+  const currencyCode = useGlobalStore((state) => state.currencyCode);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (!expenditureAmount || expenditureAmount === 0) {
       toast.error("Failed: Amount is zero");
       return;
     }
-    const exObj = EXPENDITURE_CATEGORIES.find(
-      (ec) => ec.key === selectedExpenditure
-    );
-    const payload = {
-      amount: parseInt(expenditureAmount),
-      category: selectedExpenditure,
-      date: date,
-      day: moment(date).format("YYYY-MM-DD"),
-      month: moment(date).format("YYYY-MM"),
-      year: moment(date).format("YYYY"),
-      type: exObj.type,
-      currencyCode: currencyCode || 'INR',
-      comment: comment
-    };
-    const res = await saveExpenditure(payload);
-    if (res) {
-      onExpenseAdded();
-      const message =
-        selectedExpenditure === "income"
-          ? "Income added successfully!"
-          : "Expense added successfully!";
-      toast.success(message);
+    try {
+      const exObj = EXPENDITURE_CATEGORIES.find(
+        (ec) => ec.key === selectedExpenditure
+      );
+      const payload = {
+        amount: parseInt(expenditureAmount),
+        category: selectedExpenditure,
+        date: date,
+        day: moment(date).format("YYYY-MM-DD"),
+        month: moment(date).format("YYYY-MM"),
+        year: moment(date).format("YYYY"),
+        type: exObj.type,
+        currencyCode: currencyCode || "INR",
+        comment: comment,
+      };
+      const res = await saveExpenditure(payload);
+      if (res) {
+        onExpenseAdded();
+        const message =
+          selectedExpenditure === "income"
+            ? "Income added successfully!"
+            : "Expense added successfully!";
+        toast.success(message);
+      }
+    } catch (error) {
+      toast.error("Failed to add expense. Please try again.");
+      setLoading(false);
+      return;
+    } finally {
+      setLoading(false);
     }
   };
   const handleSelectedExpenditure = (value) => {
@@ -112,7 +122,7 @@ export default function InputForm({ onExpenseAdded }) {
       </div>
 
       <div className={styles.row}>
-        <label>Amount ({currencySymbol || '₹'}):</label>
+        <label>Amount ({currencySymbol || "₹"}):</label>
         <input
           type="number"
           value={expenditureAmount}
@@ -135,8 +145,8 @@ export default function InputForm({ onExpenseAdded }) {
         />
       </div>
 
-      <button type="submit" className={styles.button}>
-        ADD
+      <button type="submit" className={styles.button} disabled={loading}>
+        {loading ? <span className={styles.spinner}></span> : "ADD"}
       </button>
     </form>
   );

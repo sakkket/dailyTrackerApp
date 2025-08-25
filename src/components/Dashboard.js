@@ -3,6 +3,7 @@ import styles from "./Dashboard.module.css";
 import { fetchUserExpenditure, getInsights } from "../API/APIService";
 import moment from "moment";
 import { FaPlusCircle } from "react-icons/fa";
+import CircularProgress from "@mui/material/CircularProgress";
 import {
   Container,
   Box,
@@ -15,6 +16,7 @@ import {
 import SummaryCards from "./SummaryCard";
 import MonthYearPicker from "./Calendar/MonthYearPicker";
 import CustomBarChart from "./BarChart/CustomBarChart";
+import DailySpendStackedChart from "./StackedChart/StackedChart";
 import CustomLineChart from "./LineChart/CustomLineChart";
 import CategoryChart from "./CategoryChart/CategoryChart";
 import CustomPieGraph from "./PieChart/CustomPieGraph";
@@ -33,14 +35,21 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
   const currentMonthOfYear = moment().format("YYYY-MM");
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const [insights, setInsights] = useState({})
+  const [insights, setInsights] = useState({});
+  const [loading, setLoading] = useState(false);
 
   async function handleMonthChange(month) {
-    setCurrentMonth(month);
-    setCurrentMonth(month);
-    fetchExpense(view, month);
-    //fetchTotalExpenseAndIncome(month);
-    fetchMonthlyExpense(month);
+    try {
+      setLoading(true);
+      setCurrentMonth(month);
+      setCurrentMonth(month);
+      await fetchExpense(view, month);
+      await fetchMonthlyExpense(month);
+    } catch (err) {
+      console.error("Error changing month", err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function fetchExpense(view, selectedMonth) {
@@ -100,10 +109,22 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
   }
 
   useEffect(() => {
-    fetchExpense(view);
-    fetchMonthlyExpense();
-    getInsights(currentMonthOfYear)
-    .then((res)=> setInsights(res));
+    const loadData = async () => {
+      setLoading(true); // start loader
+
+      try {
+        await fetchExpense(view);
+        await fetchMonthlyExpense();
+        const res = await getInsights(currentMonthOfYear);
+        setInsights(res);
+      } catch (err) {
+        console.error("Error fetching dashboard data", err);
+      } finally {
+        setLoading(false); // stop loader
+      }
+    };
+
+    loadData();
   }, [refresh, view]);
 
   const expenditureCategories = {
@@ -122,7 +143,7 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
     health: "Health & Grooming",
     creditcard: "Credit Card Bill",
     household: "Household",
-    gift: "Gift"
+    gift: "Gift",
   };
   const getPieData = (sourceData, keys) =>
     Object.keys(keys)
@@ -143,6 +164,16 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
 
   return (
     <div>
+      {loading && (
+        <div className={styles.loaderOverlayDashboard1}>
+          <CircularProgress
+            size={70}
+            thickness={4}
+            className={styles.rainbowLoaderDashboard1}
+          />
+          <div className={styles.loaderTextDashboard1}>loading...</div>
+        </div>
+      )}
       <Container maxWidth="lg">
         <Box mt={2}>
           <Typography variant="h6" fontWeight={500}>
@@ -160,7 +191,7 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
             Insights & Trends
           </Typography>
           <Box mt={2}>
-            <UserInsights insights={insights}/>
+            <UserInsights insights={insights} />
           </Box>
           <Box
             display="flex"
@@ -216,7 +247,7 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
         </Box>
       </Container>
       <div className={styles.chartGrid}>
-        <CustomBarChart
+        <DailySpendStackedChart
           title={
             "Daily Expenditure: " + moment(currentMonth).format("MMMM YYYY")
           }

@@ -21,6 +21,7 @@ import {
   useMediaQuery,
   Tooltip,
 } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -35,6 +36,8 @@ import MonthYearPicker from "./Calendar/MonthYearPicker";
 import { EXPENDITURE_CATEGORIES } from "../helpers/constants";
 import { toast } from "react-toastify";
 import { useGlobalStore } from "../store/globalStore";
+import styles from './TransactionTable.module.css';
+import { set } from "date-fns";
 
 const descendingComparator = (a, b, orderBy) => {
   if (b[orderBy] < a[orderBy]) return -1;
@@ -69,12 +72,24 @@ export default function TransactionTable() {
   const [selectedMonth, setMonth] = useState(moment().format("YYYY-MM"));
   const [pageCount, setPageCount] = useState(0);
   const currencySymbol = useGlobalStore((state) => state.currencySymbol);
+  const [loading, setLoading] = useState(false);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
-    fetchTransactionsList(selectedMonth, categoryFilter, rowsPerPage, page);
+
+    const loadData = async () => {
+         try{
+      setLoading(true);
+      await fetchTransactionsList(selectedMonth, categoryFilter, rowsPerPage, page);
+    } catch (error){
+      console.error("Error setting loading state:", error); 
+    } finally {
+      setLoading(false);
+    }
+    };
+    loadData();
   }, []);
 
   const fetchTransactionsList = async (month, category = "", limit, offset) => {
@@ -98,30 +113,28 @@ export default function TransactionTable() {
     }
   };
 
-  const handleRequestSort = (property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
-
-  const handleChangePage = (_, newPage) => {
+  const handleChangePage = async (_, newPage) => {
     setPage(newPage);
-    fetchTransactionsList(
+    setLoading(true);
+    await fetchTransactionsList(
       selectedMonth,
       "",
       rowsPerPage,
       newPage * rowsPerPage
     );
+    setLoading(false);
   };
 
-  const handleMonthChange = (month) => {
+  const handleMonthChange = async (month) => {
     setMonth(month);
-    fetchTransactionsList(
+    setLoading(true);
+    await fetchTransactionsList(
       month,
       categoryFilter,
       rowsPerPage,
       page * rowsPerPage
     );
+    setLoading(false);
   };
   const handleChangeRowsPerPage = (e) => {
     setRowsPerPage(parseInt(e.target.value, 10));
@@ -136,6 +149,7 @@ export default function TransactionTable() {
 
   const saveEdit = (id) => {
     if (id && amountEdit && amountEdit !== "0") {
+      setLoading(true);
       updateTransaction(id, { amount: parseInt(amountEdit), comment: commentEdit })
         .then((res) => {
           if(res && !res.error){
@@ -150,12 +164,17 @@ export default function TransactionTable() {
           } else{
             toast.error("Update Failed");
           }
+           setLoading(false);
         })
-        .catch((error) => toast.error("Failed to update"));
+        .catch((error) =>  {
+          toast.error("Failed to update")
+          setLoading(false);
+        });
     }
   };
 
   const deleteRow = (id) => {
+    setLoading(true);
     deleteTransactionById(id)
       .then((resp) => {
         fetchTransactionsList(
@@ -165,14 +184,20 @@ export default function TransactionTable() {
           page * rowsPerPage
         );
         toast.success("Deleted Successfully");
+        setLoading(false);
       })
-      .catch((error) => toast.error("Failed to delete"));
+      .catch((error) => {
+        toast.error("Failed to delete")
+        setLoading(false);
+      });
   };
 
-  const handleCategoryFilter = (e) => {
+  const handleCategoryFilter = async (e) => {
     const category = e.target.value;
     setCategoryFilter(category);
-    fetchTransactionsList(selectedMonth, category, rowsPerPage);
+    setLoading(true);
+    await fetchTransactionsList(selectedMonth, category, rowsPerPage);
+    setLoading(false);
     setPage(0);
   };
 
@@ -426,7 +451,20 @@ export default function TransactionTable() {
   );
 
   return (
-    <Paper sx={{ width: "100%", minHeight: "40vh", overflow: "hidden", p: 2 }}>
+    <>
+    <div>
+     {loading && (
+            <div className={styles.loaderOverlayTable1}>
+              <CircularProgress
+                size={70}
+                thickness={4}
+                className={styles.rainbowLoaderTable1}
+              />
+              <div className={styles.loaderTextTable1}>loading...</div>
+            </div>
+          )}
+    </div>
+        <Paper sx={{ width: "100%", minHeight: "40vh", overflow: "hidden", p: 2 }}>
       <Box
         display="flex"
         flexDirection={{ xs: "column", sm: "row" }}
@@ -460,6 +498,7 @@ export default function TransactionTable() {
         onPageChange={handleChangePage}
         rowsPerPageOptions={[]}
       />
-    </Paper>
+    </Paper>         
+    </>
   );
 }

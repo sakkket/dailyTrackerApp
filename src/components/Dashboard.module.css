@@ -135,3 +135,38 @@
   margin-bottom: 1.5rem;
 }
 
+.loaderOverlayDashboard1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;  /* push to top */
+  align-items: center;
+  padding-top: 40px;
+  z-index: 9999;
+}
+
+.rainbowLoaderDashboard1 {
+  animation: rainbow-colors 3s linear infinite;
+}
+
+@keyframes rainbow-colors {
+  0%   { color: #ff0000; }   /* red */
+  20%  { color: #ff7f00; }   /* orange */
+  40%  { color: #ffff00; }   /* yellow */
+  60%  { color: #00ff00; }   /* green */
+  80%  { color: #0000ff; }   /* blue */
+  100% { color: #8b00ff; }   /* violet */
+}
+
+.loaderTextDashboard1 {
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+

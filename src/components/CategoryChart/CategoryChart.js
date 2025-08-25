@@ -7,6 +7,7 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  LabelList
 } from "recharts";
 import { useTheme } from "@mui/material/styles";
 import styles from "./CategoryChart.module.css";
@@ -26,11 +27,12 @@ const CategoryChart = ({ title, data }) => {
   const barColor = isDark ? "#90caf9" : "#1976d2";
 
   return (
-   <div className={styles.chartContainer}>
+    <div className={styles.chartContainer}>
       <h3 className={styles.graphTitle}>{title}</h3>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data} margin={{ bottom: 40 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+
           <XAxis
             dataKey="category"
             tick={{
@@ -42,12 +44,14 @@ const CategoryChart = ({ title, data }) => {
             textAnchor="end"
             interval={0}
           />
+
           <YAxis
             stroke={axisStroke}
             tick={{ fontSize: 12, fill: tickFill }}
             axisLine={{ stroke: gridStroke }}
             tickLine={false}
           />
+
           <Tooltip
             contentStyle={{
               backgroundColor: tooltipBg,
@@ -57,9 +61,17 @@ const CategoryChart = ({ title, data }) => {
             }}
             labelStyle={{ color: tooltipText, fontWeight: "bold" }}
             itemStyle={{ color: barColor }}
-            formatter={(value) => `${currencySymbol+value}`}
+            formatter={(value) => `${currencySymbol}${value}`}
           />
-          <Bar dataKey="value" fill={barColor} barSize={40} />
+
+          <Bar dataKey="value" fill={barColor} barSize={40}>
+            <LabelList
+              dataKey="value"
+              position="top"
+              style={{ fill: tickFill, fontSize: 10, fontWeight: 600 }}
+              formatter={(value) => `${currencySymbol}${value}`}
+            />
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
