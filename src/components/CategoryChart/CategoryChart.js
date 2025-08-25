@@ -29,14 +29,14 @@ const CategoryChart = ({ title, data }) => {
   return (
     <div className={styles.chartContainer}>
       <h3 className={styles.graphTitle}>{title}</h3>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={400}>
         <BarChart data={data} margin={{ bottom: 40 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
 
           <XAxis
             dataKey="category"
             tick={{
-              fontSize: 10,
+              fontSize: 8,
               fill: xTickFill,
               fontWeight: 500,
             }}
@@ -68,7 +68,7 @@ const CategoryChart = ({ title, data }) => {
             <LabelList
               dataKey="value"
               position="top"
-              style={{ fill: tickFill, fontSize: 10, fontWeight: 600 }}
+              style={{ fill: tickFill, fontSize: 8, fontWeight: 600 }}
               formatter={(value) => `${currencySymbol}${value}`}
             />
           </Bar>

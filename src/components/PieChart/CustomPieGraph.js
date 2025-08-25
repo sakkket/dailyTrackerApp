@@ -63,7 +63,7 @@ const CustomPieGraph = ({ title, data }) => {
   return (
    <div className={styles.chartContainer}>
       <h3 className={styles.graphTitle}>{title}</h3>
-      <ResponsiveContainer width="100%" height={350}>
+      <ResponsiveContainer width="100%" height={400}>
         <PieChart>
           <Tooltip
             contentStyle={{
