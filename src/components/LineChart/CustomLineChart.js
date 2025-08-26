@@ -8,6 +8,7 @@ import {
   YAxis,
   Tooltip,
   Legend,
+  LabelList
 } from "recharts";
 import { useTheme } from "@mui/material/styles";
 import { parseISO, format } from "date-fns";

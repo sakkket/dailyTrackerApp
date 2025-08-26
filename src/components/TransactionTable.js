@@ -454,13 +454,13 @@ export default function TransactionTable() {
     <>
     <div>
      {loading && (
-            <div className={styles.loaderOverlayTable1}>
+            <div className={styles.loaderOverlayTable}>
               <CircularProgress
                 size={70}
                 thickness={4}
-                className={styles.rainbowLoaderTable1}
+                className={styles.rainbowLoaderTable}
               />
-              <div className={styles.loaderTextTable1}>loading...</div>
+              <div className={styles.loaderTextTable}>loading...</div>
             </div>
           )}
     </div>

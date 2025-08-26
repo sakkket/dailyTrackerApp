@@ -8,6 +8,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  LabelList
 } from "recharts";
 import { format, parseISO } from "date-fns";
 import { useTheme } from "@mui/material/styles";
@@ -86,14 +87,14 @@ const DailySpendStackedChart = ({ data, view, title, keys }) => {
             wrapperStyle={{ fontSize: 10, color: legendColor }}
             formatter={(value) => keys[value] || value}
           />
-
-{categories.map((cat, i) => (
+            {categories.map((cat, i) => (
               <Bar
                 key={cat}
                 dataKey={cat}
                 stackId="a"
                 fill={barColors[i % barColors.length]}
-              />
+              >
+              </Bar>
             ))}
         </BarChart>
       </ResponsiveContainer>

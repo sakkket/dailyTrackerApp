@@ -165,13 +165,13 @@ export default function Dashboard({ refresh, openAddExpenseModal }) {
   return (
     <div>
       {loading && (
-        <div className={styles.loaderOverlayDashboard1}>
+        <div className={styles.loaderOverlayDashboard}>
           <CircularProgress
             size={70}
             thickness={4}
-            className={styles.rainbowLoaderDashboard1}
+            className={styles.rainbowLoaderDashboard}
           />
-          <div className={styles.loaderTextDashboard1}>loading...</div>
+          <div className={styles.loaderTextDashboard}>loading...</div>
         </div>
       )}
       <Container maxWidth="lg">
